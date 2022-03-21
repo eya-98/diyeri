@@ -34,7 +34,7 @@ class TheEdit extends State<EditProfile> {
 }
 //// get from Gallerie
   _getFromGallery() async {
-    var pickedFile = await ImagePicker().getImage(
+    var pickedFile = await ImagePicker().pickImage(
         source: ImageSource.gallery,
         maxWidth: 1800,
         maxHeight: 1800,

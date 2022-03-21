@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "850600065350",
+    "project_id": "diyeri",
+    "storage_bucket": "diyeri.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:850600065350:android:40da90759f6dfa2c344d47",
+        "android_client_info": {
+          "package_name": "com.example.diari"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "850600065350-0a36hl9b25okf8dcgqtvngmbd8mjjulk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.diari",
+            "certificate_hash": "3585af8123a8ff97cba5ca334aabc9c42e9fe4bc"
+          }
+        },
+        {
+          "client_id": "850600065350-j8d3l226otas7r404us1gjc1g84547m7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAenphjeA4fMbmsUKoKd2yDE9OUjOELxTs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "850600065350-j8d3l226otas7r404us1gjc1g84547m7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
