@@ -2,43 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:diari/screens/editProfile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login.dart';
-import 'package:popover/popover.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:badges/badges.dart';
+import '../providers/reservation_provider.dart';
 
 
-class home extends StatefulWidget  {
+class Home extends StatefulWidget  {
   @override
   MyAppBar createState() => MyAppBar();
 }
 
-class MyAppBar extends State <home> {
+class MyAppBar extends State <Home> {
   @override
+  final _scaffoldKey = GlobalKey<ScaffoldState>(); 
   Widget build (BuildContext context) {
     Auth_provider auth = Provider.of<Auth_provider>(context);
+    Reservation_provider reservation = Provider.of<Reservation_provider>(context);
+
    // var child;
     return Scaffold(
+      key: _scaffoldKey,
       appBar: 
           AppBar (
+        automaticallyImplyLeading: false,
         titleSpacing: 3.0,
         backgroundColor:  Colors.transparent,
         toolbarHeight: 100,
         elevation: 0,
         flexibleSpace: 
           Row(children: [
-            const SizedBox(width: 24),
+              const SizedBox(width: 24),
             IconButton(
               icon: const Icon(Icons.menu_open_outlined, color:Color(0xffffcc00), size: 40,),
-              onPressed: () => Scaffold.of(context).openDrawer(),
+              onPressed: () => _scaffoldKey.currentState!.openDrawer(),
             ),
-            SizedBox(width: 270),
+            const SizedBox(width: 270),
             Column ( children: [
-             SizedBox(height: 28),
-              IconButton(
+             const SizedBox(height: 28),
+              Badge(
+      position: BadgePosition.topEnd(top: 0, end: 3),
+      animationDuration: const Duration(milliseconds: 300),
+      animationType: BadgeAnimationType.scale,
+      badgeContent: Text(
+         reservation.count.toString(),
+        style: const TextStyle(color: Colors.white),
+      ),
+      child: IconButton(
               icon: const Icon(Icons.shopping_cart_outlined, color:Color(0xffffcc00), size: 40,),
               onPressed: () {
               },
             ),
+              ),
               IconButton(
                 icon: const Icon(Icons.add_box_outlined, color:Color(0xffffcc00), size: 40,),
                 onPressed: () {}
@@ -101,20 +116,17 @@ class MyAppBar extends State <home> {
             trailing: const Icon(Icons.arrow_right),
             onTap: () {
               auth.SignOut();
-                        FirebaseAuth.instance.authStateChanges().listen((User? user) {
+          FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
               Navigator.push( context, MaterialPageRoute(builder: (context) => Login())
               );    } else {
-      print('user is logged in');
-Navigator.push( context, MaterialPageRoute(builder: (context) => Login()));    }
-  }); 
+          Navigator.push( context, MaterialPageRoute(builder: (context) => Login()));    }
+        }); 
           },
            ),
          ],
       )),
-      body: Container(
-        child: Products(),
-      ),
+      body:  Products(),
     );
   }
 }
@@ -124,6 +136,7 @@ class Products extends StatefulWidget {
 }
 
 class _ProductsState extends State<Products> {
+  
   final list_item = [
     {
       "name": "image 1",
@@ -168,6 +181,7 @@ class _ProductsState extends State<Products> {
 }
 
 class Product extends StatelessWidget {
+  
   final product_name;
   final product_pic;
   final product_price;
@@ -181,7 +195,8 @@ class Product extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
+Reservation_provider reservation = Provider.of<Reservation_provider>(context);
+return ClipRRect(
         borderRadius: BorderRadius.circular(25),
         child: Card(
             child: Hero(
@@ -196,6 +211,12 @@ class Product extends StatelessWidget {
                             color: Colors.black54,
                           ),
                           child: ListTile(
+                             trailing: IconButton(constraints: const BoxConstraints(), padding: EdgeInsets.zero, icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 25,), onPressed: () {
+                            reservation.increaseCounter();
+                            },),
+                            onTap: () {
+                              
+                            },
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
                               child: Image.asset(product_pic,
@@ -206,7 +227,7 @@ class Product extends StatelessWidget {
                             ),
                             title: Text(
                               "$product_price TND",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                                 fontSize: 15,
@@ -242,21 +263,18 @@ class Product extends StatelessWidget {
   }
   Widget imageDialog(image, context) {
 return Dialog(
-  // backgroundColor: Colors.transparent,
-  // elevation: 0,
-  child:  Column(
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(10),
+  ),
+  child: SingleChildScrollView (child:Column(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       Padding(
         padding: const EdgeInsets.only(left: 8.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Text(
-              'loooool',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
             IconButton(
               onPressed: () {
                 Navigator.of(context).pop();
@@ -268,25 +286,29 @@ return Dialog(
         ),
       ),
       
-      Container(
+      SizedBox(
         width: 220,
-        height: 200,
+        height: 226,
         child: Image.asset(image,
           fit: BoxFit.cover,
         ),
       ),
+      const Padding(
+        padding:  EdgeInsets.all(8.0), child:
       Text(
-              'loooool',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              'ahahahahahahahahahahaahahahahahaha hahahahahaahahah ',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+          'Add your plate name',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      const Padding(
+        padding:  EdgeInsets.only(top: 12.0, left: 8, right: 8, bottom: 8), child: 
+                Text(
+          'Add your plate description',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
     ],
   ),
+  )
 );
-
-
-
   }
