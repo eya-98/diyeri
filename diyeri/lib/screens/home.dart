@@ -249,21 +249,11 @@ decoration: BoxDecoration(
             ),
             const SizedBox(width: 270),
             Column ( children: [
-             const SizedBox(height: 28),
-              Badge(
-      position: BadgePosition.topEnd(top: 0, end: 3),
-      animationDuration: const Duration(milliseconds: 300),
-      animationType: BadgeAnimationType.scale,
-      badgeContent: Text(
-         reservation.count.toString(),
-        style: const TextStyle(color: Colors.white),
-      ),
-      child: IconButton(
-              icon: const Icon(Icons.shopping_cart_outlined, color:Color(0xffffcc00), size: 40,),
+             const SizedBox(height: 28), IconButton(
+              icon: const Icon(Icons.favorite_border, color:Color(0xffffcc00), size: 40,),
               onPressed: () {
               },
             ),
-              ),
               IconButton(
                 icon: const Icon(Icons.add_box_outlined, color:Color(0xffffcc00), size: 40,),
                 onPressed: () async {
@@ -282,14 +272,8 @@ decoration: BoxDecoration(
     drawer: Drawer(
       child: ListView(
          children: <Widget> [
-           const DrawerHeader(
-             decoration: BoxDecoration(
-               gradient: LinearGradient(colors: <Color>[
-                 Colors.deepOrange,
-                 Colors.orangeAccent,
-               ]),
-             ),
-             child: Text('')),
+            DrawerHeader(
+             child: Image.asset('assets/logo2.png')),
            ListTile(
              leading: const Icon(Icons.home,),
              title: const Text('Home', style: TextStyle(fontSize: 18),),
@@ -403,8 +387,9 @@ class Product extends StatelessWidget {
   final product_pic;
   final product_price;
   final product_old_price;
+    bool favorite = false;
 
-  const Product(
+  Product(
       {this.product_name,
       this.product_pic,
       this.product_price,
@@ -428,8 +413,12 @@ return ClipRRect(
                             color: Colors.black54,
                           ),
                           child: ListTile(
-                             trailing: IconButton(constraints: const BoxConstraints(), padding: EdgeInsets.zero, icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 25,), onPressed: () {
-                            reservation.increaseCounter();
+                             trailing: IconButton(constraints: const BoxConstraints(), padding: EdgeInsets.zero, 
+                             icon: favorite == false ? const Icon(Icons.favorite_border, color: Colors.white, size: 25,): const Icon(Icons.favorite, color: Colors.white, size: 25,), 
+                             onPressed: () {
+                              // setState(() {favorite = !favorite});
+                               print(favorite);
+                             reservation.increaseCounter();
                             },),
                             onTap: () {
                               
@@ -496,7 +485,6 @@ return Dialog(
           ],
         ),
       ),
-      
       SizedBox(
         width: 220,
         height: 226,
@@ -504,22 +492,52 @@ return Dialog(
           fit: BoxFit.cover,
         ),
       ),
-      const Padding(
-        padding:  EdgeInsets.all(8.0), child:
-      Text(
-          'Add your plate name',
+      Row(children: [
+        Column( children: [
+           const Padding(
+        padding: EdgeInsets.only(top: 12.0, left: 8, right: 8, bottom: 8), 
+        child: Text(
+        'Add your plate name',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      const Padding(
-        padding:  EdgeInsets.only(top: 12.0, left: 8, right: 8, bottom: 8), child: 
+       Container(
+         width: 180,
+        padding: const EdgeInsets.only( left: 10, bottom: 8), child: 
                 Text(
-          'Add your plate description',
+          'Add your plate description Add your plate description Add your plate description',
+          style: TextStyle(fontWeight: FontWeight.w300),
+        ),
+      ),
+        ]),
+        Column(
+          children : [Container( margin: const EdgeInsets.only(left: 38, bottom: 5, top: 5), child: 
+                Text(
+          '* Delivery',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
+        Container(
+          margin: const EdgeInsets.only(left: 40),
+          height: 30, width: 70,  decoration: BoxDecoration(
+    border: Border.all(color: Colors.red)
+  ),  
+          child: Center(child: Text('TND')),
+        ),
+        Container( 
+          margin: const EdgeInsets.only(left: 30, top: 2), 
+          child: Row(children : [
+          Icon(Icons.phone), 
+          Text('98560032')
+        ])
+        )
+        ]
+    
+        )
     ],
   ),
+    ]
+  )
   )
 );
   }
