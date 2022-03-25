@@ -6,7 +6,7 @@ import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart';
 import '../providers/reservation_provider.dart';
-
+import 'package:dotted_border/dotted_border.dart';
 
 class Home extends StatefulWidget  {
   @override
@@ -19,7 +19,217 @@ class MyAppBar extends State <Home> {
   Widget build (BuildContext context) {
     Auth_provider auth = Provider.of<Auth_provider>(context);
     Reservation_provider reservation = Provider.of<Reservation_provider>(context);
+    GlobalKey<FormState> formstate =  GlobalKey<FormState>(); 
+    String dropdownvalue = 'no';   
+    var items = [    
+    'yes', 'no'
+  ];
+    send(){
+  var formdata = formstate.currentState;
+  if (formdata!.validate()) {
+    print("valid");
+    formdata.save();
+  }
+  else {
+    print("not valid");
+  }
+}
+addDialog(context){
+return Dialog(
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(10),
+  ),
+  child: SingleChildScrollView (child:Column(
+    // mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Padding(
+        padding: const EdgeInsets.only(left: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(Icons.close_rounded),
+              color: Colors.redAccent,
+            ),
+          ],
+        ),
+      ),
+         Container(
+           height: 500,
+          child: Form (
+        autovalidateMode: AutovalidateMode.always,
+        key: formstate,
+        child: SingleChildScrollView(child: Column(children: [
+          //SizedBox(height: 20, child: Text('Plate title'),),
+          SizedBox(child: Center(child: Text('Add a Plate', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)),),
+          Container(
+          margin: const EdgeInsets.only(top: 10),
+          width: 300,
+          child: TextFormField(
+            // validator: (text){
+            // },
+          decoration: const InputDecoration(
+           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15.0), topRight: Radius.circular(15.0),),
+           // borderSide: BorderSide(color: Color(0xffffaa00)),
+           ),
+          labelText: "Title", 
+          labelStyle: TextStyle( color: Colors.red, fontSize: 20),
+            hintText: "Add your plate title ",
+            hintStyle: TextStyle(height:2, fontSize: 14),
+            floatingLabelBehavior: FloatingLabelBehavior.always 
+          ),
+          textInputAction: TextInputAction.next,
+          //controller: email,
+        ),
+        ),
+        Container (
+          margin: EdgeInsets.only(top: 10),
+          width: 300,
+          child: TextFormField(
+            maxLines: 5,
+            minLines: 1,
+            // validator: (text){ 
+            //  // if (text!.isEmpty) {
+            //   //   return "email is empty";
+            //   // }
+            //   // if (!text.contains('@') || !text.contains('.')) {
+            //   //   return "incorrect email";
+            //   // }
+            //   return null;
+            // },
+          decoration: const InputDecoration(
+           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15.0), topRight: Radius.circular(15.0),),
+           // borderSide: BorderSide(color: Color(0xffffaa00)),
+           ),
+          labelText: "Description", 
+          labelStyle: TextStyle( color: Colors.red, fontSize: 20),
+            hintText: "Add your Description",
+            hintStyle: TextStyle(height:2, fontSize: 14),
+            floatingLabelBehavior: FloatingLabelBehavior.always 
+          ),
+          keyboardType: TextInputType.emailAddress,
+          textInputAction: TextInputAction.next,
+          //controller: email,
+        )
+        ),Container (
+          margin: EdgeInsets.only(top: 10),
+          width: 300,
+          child: DropdownButtonHideUnderline(
+      child: ButtonTheme(
+        alignedDropdown: true,
+          child: DropdownButtonFormField(
+              decoration: const InputDecoration(
+          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15.0), topRight: Radius.circular(15.0),),
+           // borderSide: BorderSide(color: Color(0xffffaa00)),
+           ),
+        labelText: 'Delivery',
+        labelStyle: TextStyle( color: Colors.red, fontSize: 20),
+        hintText: 'Delivery',
+        hintStyle: TextStyle(height:2, fontSize: 14),
 
+      ),
+              // Initial Value
+              // Down Arrow Icon
+              icon: const Icon(Icons.keyboard_arrow_down),    
+              value: dropdownvalue,
+              // Array list of items
+              items: items.map((String items) {
+                return DropdownMenuItem(
+                  value: items,
+                  child: Container(child: Text(items), width: 50,)
+                );
+              }).toList(),
+              // After selecting the desired option,it will
+              // change button value to selected value
+              onChanged: (String? newValue) { 
+                setState(() {
+                  dropdownvalue = newValue!;
+                  
+                });
+              print(dropdownvalue);
+              },
+            ),
+          
+        
+      ),
+          )),
+
+        GestureDetector(child: Container(
+          margin: EdgeInsets.only(top: 25),
+          width: 250,
+          height: 100,
+          child: DottedBorder(
+  borderType: BorderType.RRect,
+  radius: const Radius.circular(12),
+  child: const ClipRRect(
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+    child: Center(child: Icon(Icons.add_a_photo)),
+        )
+  )
+        ),
+        onTap: () {
+          print('tapped (add photo)');
+        },
+        ),
+        Container (
+          margin: EdgeInsets.only(top: 10),
+          width: 300,
+          child: TextFormField(
+            maxLines: 5,
+            minLines: 1,
+            // validator: (text){ 
+            //  // if (text!.isEmpty) {
+            //   //   return "email is empty";
+            //   // }
+            //   // if (!text.contains('@') || !text.contains('.')) {
+            //   //   return "incorrect email";
+            //   // }
+            //   return null;
+            // },
+          decoration: const InputDecoration(
+           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15.0), topRight: Radius.circular(15.0),),
+           // borderSide: BorderSide(color: Color(0xffffaa00)),
+           ),
+          labelText: "Price", 
+          labelStyle: TextStyle( color: Colors.red, fontSize: 20),
+            hintText: "Add your price",
+            hintStyle: TextStyle(height:2, fontSize: 14),
+            floatingLabelBehavior: FloatingLabelBehavior.always 
+          ),
+          keyboardType: TextInputType.emailAddress,
+          textInputAction: TextInputAction.next,
+          //controller: email,
+        ),
+        ),
+        SizedBox(height: 25),
+        GestureDetector(child: ClipRRect(
+    borderRadius: BorderRadius.all(Radius.circular(25)),
+    child:Container(
+          width: 200,
+          height: 30,
+decoration: BoxDecoration(
+  borderRadius: BorderRadius.circular(25),
+    border: Border.all(color: Colors.red)
+  ),          //color: Colors.orange[900],
+          child: Center(child: Text('Publish', style: TextStyle(fontWeight: FontWeight.bold),)),
+        )
+  ),
+        onTap: () {
+        },
+        ),
+        SizedBox(height: 10),
+        ]
+         )
+         )
+  ),
+  )
+    ])));
+  
+}
    // var child;
     return Scaffold(
       key: _scaffoldKey,
@@ -56,7 +266,12 @@ class MyAppBar extends State <Home> {
               ),
               IconButton(
                 icon: const Icon(Icons.add_box_outlined, color:Color(0xffffcc00), size: 40,),
-                onPressed: () {}
+                onPressed: () async {
+                            await showDialog(
+            context: context,
+            builder: (_) => addDialog(context));
+        },
+              
               )
              ]
             ),
@@ -118,9 +333,11 @@ class MyAppBar extends State <Home> {
               auth.SignOut();
           FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
+            var snackBar = const SnackBar(
+            content: Text('Succesfully Logout'),);
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
               Navigator.push( context, MaterialPageRoute(builder: (context) => Login())
-              );    } else {
-          Navigator.push( context, MaterialPageRoute(builder: (context) => Login()));    }
+              );} 
         }); 
           },
            ),
@@ -243,12 +460,6 @@ return ClipRRect(
             context: context,
             builder: (_) => imageDialog(product_pic, context));
         },
-        
-          //                   showPopover(
-          //   context: context,
-          //   bodyBuilder: (context) { return Container();},
-          //   onPop: () => print('Popover was popped!'),
-          // );
                         
                           child: ClipRRect(
                               borderRadius:
