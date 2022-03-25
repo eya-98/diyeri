@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'home.dart';
 import 'signup.dart';
 
-
 class Login extends StatefulWidget {
   @override
 createState() => Thelogin();
@@ -62,7 +61,7 @@ child: Column(
           width: 370,
           child: TextFormField(
             validator: (text){ 
-              if (text!.isEmpty || text == null) {
+              if (text!.isEmpty) {
                 return "email is empty";
               }
               if (!text.contains('@') || !text.contains('.')) {
@@ -136,19 +135,20 @@ child: Column(
           margin: const EdgeInsets.only(left: 80),
           decoration: BoxDecoration(color: Colors.transparent, borderRadius: const BorderRadius.all(Radius.circular(30)), border: Border.all(color: const Color(0xffffaa00), width: 1.2)), 
           height: 33, width: 250, child: const Center(child: Text('Login', style: TextStyle(fontSize: 12))),), 
-        onTap: (){
+        onTap: () async {
           send;
-          auth.Login(email.text.trim(), pwd.text.trim());
+          await auth.Login(email.text.trim(), pwd.text.trim());
           FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
      // print(auth.error); {
-      var snackBar = SnackBar(
-  content: Text(auth.error),
+       
+      var snackBar = const SnackBar(
+  content: Text("please verify your Credential"),
 );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
      else {
-      var snackBar = SnackBar(
+      var snackBar = const SnackBar(
   content: Text('Succesfully Login'),
 );
  ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -164,7 +164,7 @@ Navigator.push( context, MaterialPageRoute(builder: (context) => Home()));
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Don't Have Any Account?"),
+                  const Text("Don't Have Any Account?"),
                   GestureDetector(
                     child: const Text(
                       " Register Now", style: TextStyle(fontWeight: FontWeight.w500, color: Color(0xffff6600)),
