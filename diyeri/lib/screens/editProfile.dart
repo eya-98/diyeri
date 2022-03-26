@@ -21,27 +21,17 @@ class TheEdit extends State<EditProfile> {
     TextEditingController phone =  TextEditingController();
     TextEditingController adress =  TextEditingController();
     TextEditingController fullname =  TextEditingController();
-    var imageFile;
-    send(){
-  var formdata = formstate.currentState;
-  if (formdata!.validate()) {
-    print("valid");
-    formdata.save();
-  }
-  else {
-    print("not valid");
-  }
-}
+    var _image;
+    var imagePicker;
+@override
 //// get from Gallerie
   _getFromGallery() async {
-    var pickedFile = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1800,
-        maxHeight: 1800,
-    );
-    if (pickedFile != null) {
-        File imageFile = File(pickedFile.path);
-    }
+
+        XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+        setState(() {
+        _image = File(image!.path);
+        });
+        
 }
     return Scaffold(
       body: SingleChildScrollView(
@@ -69,7 +59,7 @@ Container(
         border: Border.all(color: Colors.black),
         shape: BoxShape.circle,
       ),
-      child: imageFile == null
+      child: _image == null
                 ? Badge(
       position: BadgePosition.bottomEnd(bottom: 0, end: 3),
       badgeContent: GestureDetector(child: 
@@ -82,11 +72,15 @@ Container(
               child: Image.asset('assets/unknown.jpg'),
             ),
               ),
-            ): Container(
+            ): ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: Container(
+                  alignment: Alignment.center,
               child: Image.file(
-                imageFile,
+                _image,
                 fit: BoxFit.cover,
-              ),
+              )
+                )
  ),
 ),
     const SizedBox(height: 50),
@@ -116,12 +110,7 @@ Container(
           const SizedBox(height: 25.0,),
           SizedBox(
           width: 370, child: TextFormField(
-            validator: (text){ 
-              if (text!.isEmpty || !text.contains('@') || !text.contains('.')) {
-                return "Please enter a valid email";
-              }
-              return null;
-            },
+            
           decoration: const InputDecoration(
             focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.only(
@@ -143,18 +132,6 @@ Container(
       SizedBox(
           width: 370,
          child: TextFormField(
-            validator: (text){ 
-              RegExp regex =
-        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])');
-              if (text!.isEmpty || text.length < 8) {
-                return "Please enter a valid password over 8 characters";
-              }
-              if (!regex.hasMatch(text)){
-              // || !text.contains(RegExp("r'[A-Z]+").toString()) || !text.contains(RegExp("r'[1-9]+").toString())) {
-                return "Password should contains  at least one upper case, one lower case and one digit ";
-              }
-              return null;
-            },
            decoration: const InputDecoration(
            focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.only(
@@ -176,12 +153,6 @@ Container(
           SizedBox(
           width: 370, child:
          TextFormField(
-            validator: (text){ 
-              if (text!.isEmpty || text.length < 3) {
-                return "Please enter a valid adress";
-              }
-              return null;
-            },
            decoration: const InputDecoration(
            focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.only(
@@ -194,7 +165,6 @@ Container(
           hintStyle: TextStyle(fontSize: 14),
           prefixIcon: Icon(Icons.home, color: Color(0xffffaa00)),
           ),
-          obscureText: true,
           textInputAction: TextInputAction.next,
           controller: adress,
           ),
@@ -203,12 +173,6 @@ Container(
          SizedBox(
           width: 370,
           child: TextFormField(
-           validator: (text){ 
-            if (text!.isEmpty || text.length < 8) {
-                return "Please enter a valid number";
-              }
-              return null;
-            },
           decoration: const InputDecoration(
           focusedBorder: OutlineInputBorder(
     borderRadius: BorderRadius.only(
@@ -224,7 +188,6 @@ Container(
           ),
           keyboardType: TextInputType.phone,
 
-          obscureText: true,
           textInputAction: TextInputAction.go,
           controller: phone,
           )
@@ -235,10 +198,11 @@ Container(
         InkWell(
         child: Container(
           decoration: BoxDecoration(color: Colors.transparent, borderRadius: const BorderRadius.all(Radius.circular(30)), border: Border.all(color: const Color(0xffffaa00), width: 1.2)), 
-          height: 33, width: 150, child: const Center(child: Text('Sign Up', style: TextStyle(fontSize: 12))),), 
+          height: 33, width: 150, child: const Center(child: Text('Edit Profile', style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold))),), 
         onTap: (){
-          send;
-Navigator.push( context, MaterialPageRoute(builder: (context) => Home()));}
+Navigator.push( context, MaterialPageRoute(builder: (context) => Home()));
+          auth.EditProfile(email.text.trim(), pwd.text.trim(), adress.text.trim(), phone.text.trim(), fullname.text.trim());
+        }
         ),
         ]
         )

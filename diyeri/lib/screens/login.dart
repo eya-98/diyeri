@@ -148,12 +148,19 @@ child: Column(
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
      else {
+       if (auth.verified == true) {
       var snackBar = const SnackBar(
   content: Text('Succesfully Login'),
 );
  ScaffoldMessenger.of(context).showSnackBar(snackBar);
 Navigator.push( context, MaterialPageRoute(builder: (context) => Home()));
+} else {
+  var snackBar = const SnackBar(
+  content: Text('Please verify your email from your account'),
+);
+ ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
+     }
   }); 
       }
         ),

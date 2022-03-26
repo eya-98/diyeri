@@ -344,24 +344,31 @@ class _ProductsState extends State<Products> {
       "pic": 'assets/ojja.jpg',
       "price": 15,
       "old_price": 20,
+      "favorite": false
     },
     {
       "name": "image 2",
       "pic": 'assets/ojja.jpg',
       "price": 15,
       "old_price": 20,
+      "favorite": true
+
     },
     {
       "name": "image 3",
       "pic": 'assets/ojja.jpg',
       "price": 15,
       "old_price": 20,
+      "favorite": false
+
     },
     {
       "name": "image 4",
       "pic": 'assets/ojja.jpg',
       "price": 15,
       "old_price": 20,
+      "favorite": false
+
     },
   ];
   @override
@@ -376,6 +383,7 @@ class _ProductsState extends State<Products> {
             product_pic: list_item[index]['pic'],
             product_price: list_item[index]['price'],
             product_old_price: list_item[index]['old_price'],
+            product_favorite: list_item[index]['favorite'],
           );
         });
   }
@@ -387,13 +395,14 @@ class Product extends StatelessWidget {
   final product_pic;
   final product_price;
   final product_old_price;
-    bool favorite = false;
+  final product_favorite;
 
   Product(
       {this.product_name,
       this.product_pic,
       this.product_price,
-      this.product_old_price});
+      this.product_old_price,
+      this.product_favorite});
 
   @override
   Widget build(BuildContext context) {
@@ -414,10 +423,8 @@ return ClipRRect(
                           ),
                           child: ListTile(
                              trailing: IconButton(constraints: const BoxConstraints(), padding: EdgeInsets.zero, 
-                             icon: favorite == false ? const Icon(Icons.favorite_border, color: Colors.white, size: 25,): const Icon(Icons.favorite, color: Colors.white, size: 25,), 
-                             onPressed: () {
-                              // setState(() {favorite = !favorite});
-                               print(favorite);
+                             icon: const Icon(Icons.favorite_border, color: Colors.white, size: 25,), onPressed: () {
+                             
                              reservation.increaseCounter();
                             },),
                             onTap: () {
@@ -459,7 +466,6 @@ return ClipRRect(
                       )),
                 ))));
   }
-  
   }
   Widget imageDialog(image, context) {
 return Dialog(

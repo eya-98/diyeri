@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'home.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +18,8 @@ class TheSignUp extends State<SignUp> {
     TextEditingController pwd =  TextEditingController();
     TextEditingController phone =  TextEditingController();
     TextEditingController adress =  TextEditingController();
+    TextEditingController fullname =  TextEditingController();
+
     send(){
   var formdata = formstate.currentState;
   if (formdata!.validate()) {
@@ -59,12 +60,33 @@ void dispose() {
       const Center(child: Text('Welcome', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30))),
                 const SizedBox(height: 15),
        Image.asset('assets/logo.png', cacheHeight: 180,),
-                const SizedBox(height: 50),
+                const SizedBox(height: 30),
 
       Form (
         autovalidateMode: AutovalidateMode.always,
         key: formstate,
-        child: Column(children: [ SizedBox(
+        child: Column(children: [ 
+          SizedBox(
+          width: 370, child: TextFormField(
+          decoration: const InputDecoration(
+            focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(15.0),
+            topRight: Radius.circular(15.0),
+    ),
+    borderSide: BorderSide(color: Color(0xffffaa00)),
+  ),
+            hintText: "Enter your fullname",
+            hintStyle: TextStyle(fontSize: 14),
+          prefixIcon: Icon(Icons.person, color: Color(0xffffaa00)),
+          ),
+          keyboardType: TextInputType.name,
+          textInputAction: TextInputAction.next,
+          controller: fullname,
+        ),
+        ),
+        const SizedBox(height: 25.0,),
+          SizedBox(
           width: 370, child: TextFormField(
             validator: (text){ 
               if (text!.isEmpty || !text.contains('@') || !text.contains('.')) {
@@ -144,7 +166,6 @@ void dispose() {
           hintStyle: TextStyle(fontSize: 14),
           prefixIcon: Icon(Icons.home, color: Color(0xffffaa00)),
           ),
-          obscureText: true,
           textInputAction: TextInputAction.next,
           controller: adress,
           ),
@@ -174,7 +195,6 @@ void dispose() {
           ),
           keyboardType: TextInputType.phone,
 
-          obscureText: true,
           textInputAction: TextInputAction.go,
           controller: phone,
           )
@@ -185,18 +205,17 @@ void dispose() {
         InkWell(
         child: Container(
           decoration: BoxDecoration(color: Colors.transparent, borderRadius: const BorderRadius.all(Radius.circular(30)), border: Border.all(color: const Color(0xffffaa00), width: 1.2)), 
-          height: 33, width: 150, child: const Center(child: Text('Sign Up', style: TextStyle(fontSize: 12))),), 
-        onTap: (){
+          height: 33, width: 150, child: const Center(child: Text('Sign Up', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),), 
+        onTap: ()async {
           send;
-          auth.SignUp(email.text.trim(), pwd.text.trim());
-             FirebaseAuth.instance.authStateChanges().listen((User? user) {
+           await auth.SignUp(email.text.trim(), pwd.text.trim(), adress.text.trim(), phone.text.trim(), fullname.text.trim());
+
+          await FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
-      
-      var snackBar = SnackBar(
-  content: Text(auth.error),
+      var snackBar = const SnackBar(
+  content: Text("Please verify your Credential"),
 );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    print(auth.error);
     print('no user is signed up');
              }
     else {
@@ -205,6 +224,7 @@ Navigator.push( context, MaterialPageRoute(builder: (context) => Home()));}
              }
   ); 
           }
+        
         ),
         ]
         )
