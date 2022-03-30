@@ -11,11 +11,11 @@ class Login extends StatefulWidget {
 createState() => Thelogin();
 }
 class Thelogin extends State<Login> {
-
-  Widget build(BuildContext context) {
-    Auth_provider auth = Provider.of<Auth_provider>(context);
+  bool Obscure = true;
     bool isChecked = false;
     GlobalKey<FormState> formstate =  GlobalKey<FormState>();
+    TextEditingController email =  TextEditingController();
+    TextEditingController pwd =  TextEditingController();
     send(){
   var formdata = formstate.currentState;
   if (formdata!.validate()) {
@@ -26,8 +26,9 @@ class Thelogin extends State<Login> {
     print("not valid");
   }
 }
-    TextEditingController email =  TextEditingController();
-    TextEditingController pwd =  TextEditingController();
+  Widget build(BuildContext context) {
+          Auth_provider auth = Provider.of<Auth_provider>(context);
+
     return Scaffold(
 body: SingleChildScrollView(
 child: Column(
@@ -86,6 +87,7 @@ child: Column(
        SizedBox(
           width: 370,
           child: TextFormField(
+            obscureText: Obscure,
            validator: (text){ 
               if (text!.isEmpty) {
                 return "password is empty";
@@ -95,9 +97,23 @@ child: Column(
               }
               return null;
             },
-          decoration: const InputDecoration(
-            focusedBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.only(
+          decoration: InputDecoration(
+            suffixIcon: InkWell(
+            child: Icon(Icons.visibility,
+            color: Color(0xffffaa00),
+            ),
+            onTap: () {  
+              
+              WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {
+                Obscure = !Obscure;
+              }));
+                    print("aaaaaaaaaa");
+
+      print(Obscure);
+            },
+        ),
+            focusedBorder: const OutlineInputBorder(
+    borderRadius:  BorderRadius.only(
 
       bottomLeft: Radius.circular(15.0),
 
@@ -109,12 +125,13 @@ child: Column(
 
   ),
             hintText: "Enter your password",
-            hintStyle: TextStyle(fontSize: 14),
-          prefixIcon: Icon(Icons.lock, color: Color(0xffffaa00) ),
+            hintStyle: const TextStyle(fontSize: 14),
+          prefixIcon: const Icon(Icons.lock, color: Color(0xffffaa00) ),
+          
           ),
-          obscureText: true,
           textInputAction: TextInputAction.go,
           controller: pwd,
+          
           ),)])
         )
         ),
@@ -122,6 +139,9 @@ child: Column(
                Row( children : [
        Checkbox( value: isChecked,  
        onChanged: (value) {
+         setState(() {
+           isChecked = !isChecked;
+         });
              },
        ),
        const Text('Remember me'),
