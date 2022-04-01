@@ -7,6 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:badges/badges.dart';
 import '../providers/reservation_provider.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'favorites.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class Home extends StatefulWidget  {
   @override
@@ -20,6 +23,11 @@ class MyAppBar extends State <Home> {
     Auth_provider auth = Provider.of<Auth_provider>(context);
     Reservation_provider reservation = Provider.of<Reservation_provider>(context);
     GlobalKey<FormState> formstate =  GlobalKey<FormState>(); 
+    TextEditingController title =  TextEditingController();
+    TextEditingController description =  TextEditingController();
+    TextEditingController id =  TextEditingController();
+    TextEditingController price =  TextEditingController();
+    bool favorite =  false;
     String dropdownvalue = 'no';   
     var items = [    
     'yes', 'no'
@@ -70,8 +78,11 @@ return Dialog(
           margin: const EdgeInsets.only(top: 10),
           width: 300,
           child: TextFormField(
-            // validator: (text){
-            // },
+             validator: (text){
+               if (text!.isEmpty) {
+                return "Please insert a title to your plate";
+              }
+             },
           decoration: const InputDecoration(
            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15.0), topRight: Radius.circular(15.0),),
            // borderSide: BorderSide(color: Color(0xffffaa00)),
@@ -83,7 +94,7 @@ return Dialog(
             floatingLabelBehavior: FloatingLabelBehavior.always 
           ),
           textInputAction: TextInputAction.next,
-          //controller: email,
+          controller: title,
         ),
         ),
         Container (
@@ -92,18 +103,14 @@ return Dialog(
           child: TextFormField(
             maxLines: 5,
             minLines: 1,
-            // validator: (text){ 
-            //  // if (text!.isEmpty) {
-            //   //   return "email is empty";
-            //   // }
-            //   // if (!text.contains('@') || !text.contains('.')) {
-            //   //   return "incorrect email";
-            //   // }
-            //   return null;
-            // },
+             validator: (text){ 
+               if (text!.isEmpty) {
+                  return "Please insert a description";
+                }
+             },
           decoration: const InputDecoration(
            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15.0), topRight: Radius.circular(15.0),),
-           // borderSide: BorderSide(color: Color(0xffffaa00)),
+
            ),
           labelText: "Description", 
           labelStyle: TextStyle( color: Colors.red, fontSize: 20),
@@ -113,7 +120,7 @@ return Dialog(
           ),
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
-          //controller: email,
+          controller: description,
         )
         ),Container (
           margin: EdgeInsets.only(top: 10),
@@ -148,18 +155,14 @@ return Dialog(
               onChanged: (String? newValue) { 
                 setState(() {
                   dropdownvalue = newValue!;
-                  
+                  print(dropdownvalue);
                 });
-              print(dropdownvalue);
               },
             ),
-          
-        
       ),
           )),
-
         GestureDetector(child: Container(
-          margin: EdgeInsets.only(top: 25),
+          margin: const EdgeInsets.only(top: 25),
           width: 250,
           height: 100,
           child: DottedBorder(
@@ -179,20 +182,15 @@ return Dialog(
           margin: EdgeInsets.only(top: 10),
           width: 300,
           child: TextFormField(
-            maxLines: 5,
-            minLines: 1,
-            // validator: (text){ 
-            //  // if (text!.isEmpty) {
-            //   //   return "email is empty";
-            //   // }
-            //   // if (!text.contains('@') || !text.contains('.')) {
-            //   //   return "incorrect email";
-            //   // }
-            //   return null;
-            // },
+             validator: (text){ 
+               print("priiiice");
+               print(text is int);
+               if (text!.isEmpty || text is int) {
+               return "please enter a valid price ";
+             }
+             },
           decoration: const InputDecoration(
            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15.0), topRight: Radius.circular(15.0),),
-           // borderSide: BorderSide(color: Color(0xffffaa00)),
            ),
           labelText: "Price", 
           labelStyle: TextStyle( color: Colors.red, fontSize: 20),
@@ -201,8 +199,8 @@ return Dialog(
             floatingLabelBehavior: FloatingLabelBehavior.always 
           ),
           keyboardType: TextInputType.emailAddress,
-          textInputAction: TextInputAction.next,
-          //controller: email,
+          textInputAction: TextInputAction.go,
+          controller: price,
         ),
         ),
         SizedBox(height: 25),
@@ -212,16 +210,19 @@ return Dialog(
           width: 200,
           height: 30,
 decoration: BoxDecoration(
-  borderRadius: BorderRadius.circular(25),
+  borderRadius: BorderRadius.circular(50),
     border: Border.all(color: Colors.red)
   ),          //color: Colors.orange[900],
           child: Center(child: Text('Publish', style: TextStyle(fontWeight: FontWeight.bold),)),
         )
   ),
         onTap: () {
+          send();
+          reservation.addReservation(title.text.trim(), description.text.trim(), dropdownvalue.trim(), price.text.trim(), auth.ID, favorite);
+        Navigator.of(context).pop();
         },
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 100),
         ]
          )
          )
@@ -252,7 +253,10 @@ decoration: BoxDecoration(
              const SizedBox(height: 28), IconButton(
               icon: const Icon(Icons.favorite_border, color:Color(0xffffcc00), size: 40,),
               onPressed: () {
-              },
+                Navigator.push(context,
+          MaterialPageRoute(builder: (context) => Favorites()),
+              );
+                },
             ),
               IconButton(
                 icon: const Icon(Icons.add_box_outlined, color:Color(0xffffcc00), size: 40,),
@@ -313,9 +317,9 @@ decoration: BoxDecoration(
             leading: const Icon(Icons.logout),
             title: const Text('Logout out', style: TextStyle(fontSize: 18),),
             trailing: const Icon(Icons.arrow_right),
-            onTap: () {
+            onTap: () async{
               auth.SignOut();
-          FirebaseAuth.instance.authStateChanges().listen((User? user) {
+          await FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
             var snackBar = const SnackBar(
             content: Text('Succesfully Logout'),);
@@ -337,73 +341,72 @@ class Products extends StatefulWidget {
 }
 
 class _ProductsState extends State<Products> {
-  
-  final list_item = [
-    {
-      "name": "image 1",
-      "pic": 'assets/ojja.jpg',
-      "price": 15,
-      "old_price": 20,
-      "favorite": false
-    },
-    {
-      "name": "image 2",
-      "pic": 'assets/ojja.jpg',
-      "price": 15,
-      "old_price": 20,
-      "favorite": true
-
-    },
-    {
-      "name": "image 3",
-      "pic": 'assets/ojja.jpg',
-      "price": 15,
-      "old_price": 20,
-      "favorite": false
-
-    },
-    {
-      "name": "image 4",
-      "pic": 'assets/ojja.jpg',
-      "price": 15,
-      "old_price": 20,
-      "favorite": false
-
-    },
-  ];
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-        itemCount: list_item.length,
+    return StreamBuilder(stream: FirebaseFirestore.instance.collection('reservation').snapshots(), 
+    builder: (context, AsyncSnapshot snapshot){
+    if (snapshot.hasData) {
+      final reservationDocs = snapshot.data.docs;
+        //print(reservationDocs[1].data()['title']);
+     if (reservationDocs.length > 0)
+      {return GridView.builder(
+        itemCount: reservationDocs.length,
         gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+        const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index) {
-          return Product(
-            product_name: list_item[index]['name'],
-            product_pic: list_item[index]['pic'],
-            product_price: list_item[index]['price'],
-            product_old_price: list_item[index]['old_price'],
-            product_favorite: list_item[index]['favorite'],
-          );
-        });
+           return Product(
+             product_delivery: reservationDocs[index].data()['delivery'],
+             product_name: reservationDocs[index].data()['title'],
+             product_pic: reservationDocs[index].data()['pic'],
+             product_price: reservationDocs[index].data()['price'],
+             product_description: reservationDocs[index].data()['description'],
+             product_favorite: reservationDocs[index].data()['favorite'],
+             userid: reservationDocs[index].data()['user_id'],
+             reservid: reservationDocs[index].data()['id'],
+           );
+        }
+        );
+      }
+      }
+      else {
+        return Text("");
+      }
+    if (snapshot.hasError) {
+      return const Text('Error');
+    }
+    if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator(color: Colors.red,), );
+    }
+    return Container();
+  }
+    );
   }
 }
-
-class Product extends StatelessWidget {
-  
+class Product extends StatefulWidget {
   final product_name;
   final product_pic;
   final product_price;
-  final product_old_price;
-  final product_favorite;
-
+  final product_delivery;
+  final product_description;
+  final userid;
+  final reservid;
+  bool product_favorite;
   Product(
-      {this.product_name,
+      {
+      this.product_delivery,
+      this.product_name,
       this.product_pic,
       this.product_price,
-      this.product_old_price,
-      this.product_favorite});
+      this.product_description,
+      this.product_favorite=false,
+      this.userid, 
+      this.reservid});
 
+  @override
+  State<Product> createState() => _ProductState();
+}
+
+class _ProductState extends State<Product> {
   @override
   Widget build(BuildContext context) {
 Reservation_provider reservation = Provider.of<Reservation_provider>(context);
@@ -411,7 +414,7 @@ return ClipRRect(
         borderRadius: BorderRadius.circular(25),
         child: Card(
             child: Hero(
-                tag: product_name,
+                tag: widget.product_name,
                 child: Material(
                   child: InkWell(
                       onTap: () {},
@@ -423,51 +426,51 @@ return ClipRRect(
                           ),
                           child: ListTile(
                              trailing: IconButton(constraints: const BoxConstraints(), padding: EdgeInsets.zero, 
-                             icon: const Icon(Icons.favorite_border, color: Colors.white, size: 25,), onPressed: () {
-                             
-                             reservation.increaseCounter();
+                             icon: widget.product_favorite == false ? const Icon(Icons.favorite_border, color: Colors.white, size: 25,) : const Icon(Icons.favorite, color: Colors.white, size: 25,), 
+                             onPressed: () async {
+                              setState(() {
+                                widget.product_favorite = !widget.product_favorite;
+                              });
+                              reservation.favorite(widget.reservid, widget.product_favorite);
                             },),
                             onTap: () {
-                              
+                    
                             },
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
-                              child: Image.asset(product_pic,
+                              child: Image.asset(widget.product_pic,
                                   width: 40,
                                   height: 40,
                                   fit: BoxFit
                                       .cover), 
                             ),
                             title: Text(
-                              "$product_price TND",
+                              "${widget.product_price} TND",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                                 fontSize: 15,
                               ),
                             ),
-                            //subtitle: Text( '\$$product_price', style: TextStyle(fontWeight:FontWeight.bold,
-                            //decoration: TextDecoration.lineThrough, color: Colors.redAccent,fontSize: 15),),
                           ),
                         ),
                         child: InkWell(
                           onTap: () async {
           await showDialog(
             context: context,
-            builder: (_) => imageDialog(product_pic, context));
+            builder: (_) => imageDialog(widget.product_pic ,context, widget.product_delivery, widget.product_price, widget.product_description, widget.product_name, widget.userid));
         },
-                        
-                          child: ClipRRect(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(15.0)),
-                              child:
-                                  Image.asset(product_pic, fit: BoxFit.cover)),
+              child: ClipRRect(
+                  borderRadius:
+                  const BorderRadius.all(Radius.circular(15.0)),
+                  child: Image.asset(widget.product_pic, fit: BoxFit.cover)),
                         ),
                       )),
                 ))));
   }
-  }
-  Widget imageDialog(image, context) {
+}
+  Widget imageDialog(image, context, delivery, price, description, title, userid) {
+
 return Dialog(
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(10),
@@ -483,9 +486,9 @@ return Dialog(
           children: [
             IconButton(
               onPressed: () {
-                Navigator.of(context).pop();
+              Navigator.of(context).pop();
               },
-              icon: Icon(Icons.close_rounded),
+              icon: const Icon(Icons.close_rounded),
               color: Colors.redAccent,
             ),
           ],
@@ -500,45 +503,58 @@ return Dialog(
       ),
       Row(children: [
         Column( children: [
-           const Padding(
-        padding: EdgeInsets.only(top: 12.0, left: 8, right: 8, bottom: 8), 
-        child: Text(
-        'Add your plate name',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          Padding(
+        padding: const EdgeInsets.only(top: 12.0, left: 8, right: 8, bottom: 8), 
+        child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
        Container(
          width: 180,
         padding: const EdgeInsets.only( left: 10, bottom: 8), child: 
-                Text(
-          'Add your plate description Add your plate description Add your plate description',
-          style: TextStyle(fontWeight: FontWeight.w300),
+                 Text(description,
+          style: const TextStyle(fontWeight: FontWeight.w300),
         ),
       ),
         ]),
         Column(
-          children : [Container( margin: const EdgeInsets.only(left: 38, bottom: 5, top: 5), child: 
-                Text(
+          children : [Container( margin: const EdgeInsets.only(left: 38, bottom: 5, top: 5), 
+          child: delivery.toString().trim() == 'yes'.trim() ?
+                const Text(
           '* Delivery',
           style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        ) : 
+        Container(height: 0), 
       ),
         Container(
-          margin: const EdgeInsets.only(left: 40),
+          margin: const EdgeInsets.only(left: 50),
           height: 30, width: 70,  decoration: BoxDecoration(
     border: Border.all(color: Colors.red)
-  ),  
-          child: Center(child: Text('TND')),
+  ),
+          child: Center(child: Text("$price TND")),
         ),
         Container( 
-          margin: const EdgeInsets.only(left: 30, top: 2), 
+          margin: delivery == 'yes' ? const EdgeInsets.only(left: 30, top: 2): const EdgeInsets.only(left: 30, top: 6), 
           child: Row(children : [
-          Icon(Icons.phone), 
-          Text('98560032')
+           //Icon(Icons.phone), 
+            FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+  future: FirebaseFirestore.instance.collection('user').doc(userid).get(),
+  builder: (_, snapshot) {
+    if (snapshot.hasData) {
+      var data = snapshot.data!.data();
+      var value = data?['Phone']; // <-- Your value
+      return Row (children: [
+        const SizedBox(height: 5),
+        const Icon(Icons.phone),
+        Text('$value')
+      ]);
+    }
+
+    return Container();
+  },
+) 
         ])
         )
         ]
-    
         )
     ],
   ),
