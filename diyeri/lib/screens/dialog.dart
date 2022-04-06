@@ -24,18 +24,19 @@ class _ProductsState extends State<Products> {
     @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async{
-     Reservation_provider res = Provider.of<Reservation_provider>(context, listen: false);
-      var test = await res.downloadURLExample(res.id);
-      if (test.trim() != 'no') {
-        path =  await res.downloadURLExample(res.id);
-      }
-      else {
-        path = null;
-      }
-      print("yyyyyyyyyyyyyyyyyy $path");
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) async{
+    //  Reservation_provider res = Provider.of<Reservation_provider>(context, listen: false);
+    //   var test = await res.downloadURLExample(res.id);
+    //   if (test.trim() != 'no') {
+    //     path =  await res.downloadURLExample(res.id);
+    //   }
+    //   else {
+    //     path = null;
+    //   }
+    //   print("yyyyyyyyyyyyyyyyyy $path");
+    // });
   }
+
   Widget build(BuildContext context) {
     return StreamBuilder(stream: FirebaseFirestore.instance.collection('reservation').snapshots(), 
     builder: (context, AsyncSnapshot snapshot){
@@ -104,6 +105,9 @@ class _ProductState extends State<Product> {
   @override
   Widget build(BuildContext context) {
 Reservation_provider reservation = Provider.of<Reservation_provider>(context);
+return FutureBuilder(future: reservation.downloadprofileimg(context, widget.userid), 
+builder: (context, snapshot) {
+if (snapshot.connectionState == ConnectionState.done && snapshot.data.toString().trim() != 'no') {
 return ClipRRect(
         borderRadius: BorderRadius.circular(25),
         child: Card(
@@ -127,11 +131,10 @@ return ClipRRect(
                               
                             },),
                             onTap: () {
-                              
                             },
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
-                              child: Image.network(widget.product_pic,
+                              child: Image.network(snapshot.data.toString(),
                                   width: 40,
                                   height: 40,
                                   fit: BoxFit
@@ -160,6 +163,12 @@ return ClipRRect(
                         ),
                       )),
                 )));
+  }
+  
+  else {
+    return Center(child: CircularProgressIndicator(color: Colors.red,), );
+  }
+});
   }
 }
   Widget imageDialog(image, context, delivery, price, description, title, userid) {

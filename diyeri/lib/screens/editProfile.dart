@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:image_crop/image_crop.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:badges/badges.dart';
 
 // import 'dart:async';
@@ -22,36 +23,31 @@ enum AppState {
 }
 
 class TheEdit extends State<EditProfile> {
+  bool pic = false;
   var _image = null;
   late AppState state;
-  var imagePicker;
   final cropKey = GlobalKey<CropState>();
   var _file;
-  var _sample;
+  
   var path;
+  var _sample;
   var _lastCropped;
+  String userpic = '';
   @override
   void initState() {
     super.initState();
     state = AppState.free;
-   awaitinit();
-  }
-  awaitinit()async{
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) async{
-     Auth_provider auth = Provider.of<Auth_provider>(context, listen: false);
-      var test = await auth.downloadURLExample();
-      if (test.trim() != 'no') {
-        path =  await auth.downloadURLExample();
-      }
-      else {
-        path = null;
-      }
-      print("yyyyyyyyyyyyyyyyyy $path");
-
-    });
   }
   Widget build(BuildContext context) {
     Auth_provider auth = Provider.of<Auth_provider>(context);
+
+  
+  Future<String>_getImage(BuildContext context)async{
+    var link = await auth.downloadURLExample();
+    return link;
+  }
+
+
     GlobalKey<FormState> formstate = GlobalKey<FormState>();
     TextEditingController email = TextEditingController();
     TextEditingController pwd = TextEditingController();
@@ -59,11 +55,11 @@ class TheEdit extends State<EditProfile> {
     TextEditingController adress = TextEditingController();
     TextEditingController fullname = TextEditingController();
     @override
-//// get from Galleriea
+//// crop image
     Future<Null> _cropImage() async {
       File? croppedFile = await ImageCropper().cropImage(
           //cropStyle: CropStyle.circle,
-          sourcePath: imagePicker,
+          sourcePath: path,
           aspectRatioPresets: Platform.isAndroid
               ? [
                   CropAspectRatioPreset.square,
@@ -103,17 +99,16 @@ class TheEdit extends State<EditProfile> {
       XFile? image = await ImagePicker().pickImage(
           source: ImageSource.gallery, maxHeight: 1080, maxWidth: 1080);
       setState(() {
-        imagePicker = image?.path;
+        path = image?.path;
         state = AppState.picked;
-        _image = imagePicker == null ? null : File(imagePicker);
+        _image = path == null ? null : File(path);
       });
       if (state == AppState.picked) {
         _cropImage();
       }
-      print("leeeeeeeeeeeee $_image");
     }
     void _clearImage() {
-      imagePicker = null;
+      path = null;
       setState(() {
         state = AppState.free;
       });
@@ -174,7 +169,17 @@ class TheEdit extends State<EditProfile> {
                   borderRadius: BorderRadius.circular(100),
                   child: Container(
                     alignment: Alignment.center,
-                    child: path != null ? Image.network(path, height: 150, width: 150, fit: BoxFit.fill) :  Image.asset('assets/unknown.jpg'),
+                    child: FutureBuilder(future: _getImage(context),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done && snapshot.data.toString().trim() != 'no') {
+                          return Image.network(snapshot.data.toString(), height: 150, width: 150, fit: BoxFit.fill,);
+                        }
+                      else {
+                        print(snapshot.data);
+                    return Image.asset('assets/unknown.jpg');
+                      }
+                    }
+                    ),
                   ),
                 ),
               )
@@ -335,14 +340,21 @@ class TheEdit extends State<EditProfile> {
                         TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
           ),
           onTap: () async {
+            var link;
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Home()));
+                context, MaterialPageRoute(builder: (context) => const Home()));
             auth.update(email.text.trim(), pwd.text.trim());
+            if (_image != null) {
+              await auth.upload(path);
+            var link = await auth.downloadURLExample();
+            if (link.toString() != 'no'){
+                setState(() {
+                pic = true;});
+            }
+            }
             auth.EditProfile(email.text.trim(), pwd.text.trim(),
                 adress.text.trim(), phone.text.trim(), fullname.text.trim());
-            if (_image != null) {
-              await auth.upload(imagePicker);
-            }
+
           }),
     ])));
   }

@@ -9,13 +9,13 @@ import 'package:provider/provider.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();  
-  debugShowCheckedModeBanner: false;
   await Firebase.initializeApp();
   runApp(MyApp());
 }
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    
     return MultiProvider(
               providers: [
                 ChangeNotifierProvider<Auth_provider>(create: (_) => Auth_provider()),
@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
               ],
               child:
     MaterialApp(
+        debugShowCheckedModeBanner: false,
       title: 'Diyeri',
       // home: Login()
       home: Login() 

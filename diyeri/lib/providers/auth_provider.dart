@@ -28,7 +28,8 @@ class Auth_provider with ChangeNotifier {
         "adress": adress,
         "fullname": fullname,
         "Phone": phone,
-        "favorite": false
+        "favorite": false,
+        "userpic": "assets/unknown.jpg"
       });
     } on FirebaseException catch (e) {
       print(e);

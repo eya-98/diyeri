@@ -11,6 +11,8 @@ class Reservation_provider with ChangeNotifier {
   var id;
 int count = 0;
 CollectionReference reservation = FirebaseFirestore.instance.collection("reservation");
+CollectionReference auth = FirebaseFirestore.instance.collection("user");
+
     counter(count) async{
       count = 0;
       var reservationBody = await reservation.get();
@@ -20,18 +22,13 @@ CollectionReference reservation = FirebaseFirestore.instance.collection("reserva
     }});
       return count;
     }
-      // void increaseCounter(){
-      //   count++ ;
-      //   notifyListeners();
-      // }
        void decreaseCounter(){
           count-- ;
           notifyListeners();
        }
-  addReservation(title, description, delivery, price, user_id, favorite, path){
-    print('paaaaaaaaaaaath $path');
+  addReservation(title, description, delivery, price, user_id, favorite, path) async{
     print('idddddd add reservation $id');
-    reservation.doc(id).set({"title": title, "description": description, "delivery":delivery, "price": price, "user_id": user_id, "favorite": favorite, "id" : id, "pic" : path  });
+    reservation.doc(id).set({"title": title, "description": description, "delivery":delivery, "price": price, "user_id": user_id, "favorite": favorite, "id" : id, "pic" : path ,});
   }
   getReservationslength() async{
     final int documents = await reservation.snapshots().length;
@@ -83,4 +80,14 @@ print(e);
 return 'no';
 }
 }
+Future<String>downloadprofileimg(BuildContext contex, ID)async{
+  try {
+    String downloadURL = await storage.ref().child('profiles').child('$ID').getDownloadURL();
+    return downloadURL;
+    }
+  catch (e) {
+    print(e);
+    return 'no';
+    }
+  }
 }

@@ -298,7 +298,6 @@ decoration: BoxDecoration(
   ),
         onTap: ()  async{
           send();
-          
           if (title.text.isNotEmpty && description.text.isNotEmpty && price.text.isNotEmpty)
           {
           setState(() {
@@ -306,6 +305,7 @@ decoration: BoxDecoration(
           });
           await reservation.upload(path);
           path = await reservation.downloadURLExample(reservation.id);
+         
           if (title.text.isNotEmpty && description.text.isNotEmpty && price.text.isNotEmpty && path != 'no') {
           reservation.addReservation(title.text.trim(), description.text.trim(), dropdownvalue.trim(), price.text.trim(), auth.ID, favorite, path);
         Navigator.of(context).pop();
@@ -387,7 +387,7 @@ decoration: BoxDecoration(
              leading: const Icon(Icons.person),
              title: const Text('My Profile', style: TextStyle(fontSize: 18),),
              trailing: const Icon(Icons.arrow_right),
-             onTap: () {
+             onTap: () async{
                Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => EditProfile()),
