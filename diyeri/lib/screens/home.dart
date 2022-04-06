@@ -26,7 +26,7 @@ class MyAppBar extends State <Home> {
   final _scaffoldKey = GlobalKey<ScaffoldState>(); 
   var _image;
   late AppState state;
-  var imagePicker;
+  //var imagePicker;
   var _file;
   var _sample;
   var _lastCropped;
@@ -63,7 +63,7 @@ class MyAppBar extends State <Home> {
 Future<Null> _cropImage() async {
     File? croppedFile = await ImageCropper().cropImage(
         //cropStyle: CropStyle.circle,
-        sourcePath: imagePicker,
+        sourcePath: path,
          aspectRatioPresets: Platform.isAndroid
              ? [
                 CropAspectRatioPreset.square,
@@ -94,6 +94,7 @@ Future<Null> _cropImage() async {
     if (croppedFile != null) {
       _image = croppedFile;
       setState(() {
+        path = _image!.path;
         state = AppState.cropped;
       });
     }
@@ -101,23 +102,17 @@ Future<Null> _cropImage() async {
   _getFromGallery() async {
         XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery, maxHeight: 1080, maxWidth: 1080);
         setState(() {
-          imagePicker = image!.path;
+          path = image!.path;
           state = AppState.picked;
-        _image = File(imagePicker);
+        _image = File(path);
         });
         
         if (state == AppState.picked) {
             _cropImage();
           }
-        print("leeeeeeeeeeeee $_image");
-        if (_image != null) {
-          //ediiiiiiiiiiiiiiiiit
-          //await reservation.upload(imagePicker);
-          //path = await reservation.downloadURLExample();
-            }
 }
   void _clearImage() {
-    imagePicker = null;
+    path = null;
   setState(() {
   state = AppState.free;
 }
@@ -245,16 +240,12 @@ return Dialog(
           child: DottedBorder(
   borderType: BorderType.RRect,
   radius: const Radius.circular(12),
-  child:  _image == null ? const ClipRRect(
+  child:  state == AppState.cropped || state == AppState.picked ? const ClipRRect(
     borderRadius: BorderRadius.all(Radius.circular(12)),
     child: Center(child: Icon(Icons.add_a_photo)),
         ):  ClipRRect(
     borderRadius: const BorderRadius.all(Radius.circular(12)),
-    child: Center(child: Image.file(
-                _image,
-                fit: BoxFit.fill, width: 250,
-          height: 100,
-              ), ),
+    child: Center(child: Icon(Icons.add), ),
   )
         ),
         ),
@@ -313,12 +304,16 @@ decoration: BoxDecoration(
           setState(() {
             reservation.id = reservation.generate(reservation.id);
           });
-          await reservation.upload(imagePicker);
+          await reservation.upload(path);
           path = await reservation.downloadURLExample(reservation.id);
           if (title.text.isNotEmpty && description.text.isNotEmpty && price.text.isNotEmpty && path != 'no') {
           reservation.addReservation(title.text.trim(), description.text.trim(), dropdownvalue.trim(), price.text.trim(), auth.ID, favorite, path);
         Navigator.of(context).pop();
           }
+          setState(() {
+            _image = null;
+            path = null;
+          });
            }
         },
         ),

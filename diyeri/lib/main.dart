@@ -8,7 +8,8 @@ import 'package:provider/provider.dart';
 //import 'screens/home.dart';
 
 void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();  
+  debugShowCheckedModeBanner: false;
   await Firebase.initializeApp();
   runApp(MyApp());
 }

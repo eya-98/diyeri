@@ -20,6 +20,7 @@ enum AppState {
   picked,
   cropped,
 }
+
 class TheEdit extends State<EditProfile> {
   var _image = null;
   late AppState state;
@@ -27,15 +28,15 @@ class TheEdit extends State<EditProfile> {
   final cropKey = GlobalKey<CropState>();
   var _file;
   var _sample;
-  var _lastCropped;
   var path;
+  var _lastCropped;
   @override
   void initState() {
     super.initState();
     state = AppState.free;
-  awaitinit();
+   awaitinit();
   }
-  void awaitinit(){
+  awaitinit()async{
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) async{
      Auth_provider auth = Provider.of<Auth_provider>(context, listen: false);
       var test = await auth.downloadURLExample();
