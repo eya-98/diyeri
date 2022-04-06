@@ -100,13 +100,6 @@ class _ProductsState extends State<favs> {
       else {
         return const SizedBox(height: 0, width: 0);
       }
-    if (snapshot.hasError) {
-      return const Text('Error');
-    }
-    if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Colors.red,), );
-    }
-    return const SizedBox(height: 0, width: 0);
   }
     );
   }
@@ -139,10 +132,13 @@ class _ProductState extends State<favorite> {
   @override
   Widget build(BuildContext context) {
 Reservation_provider reservation = Provider.of<Reservation_provider>(context);
+return FutureBuilder(future: reservation.downloadprofileimg(context, widget.userid), 
+builder: (context, snapshot) {
+if (snapshot.connectionState == ConnectionState.done && snapshot.data.toString().trim() != 'no') {
 return ClipRRect(
         borderRadius: BorderRadius.circular(25),
         child: Card(
-            child:  Material(
+                child: Material(
                   child: InkWell(
                       onTap: () {},
                       child: GridTile(
@@ -159,11 +155,13 @@ return ClipRRect(
                                 widget.product_favorite = !widget.product_favorite;
                               });
                               reservation.favorite(widget.reservid, widget.product_favorite);
+                              
                             },),
-                            onTap: () {},
+                            onTap: () {
+                            },
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
-                              child: Image.network(widget.product_pic,
+                              child: Image.network(snapshot.data.toString(),
                                   width: 40,
                                   height: 40,
                                   fit: BoxFit
@@ -192,6 +190,12 @@ return ClipRRect(
                         ),
                       )),
                 )));
+  }
+  
+  else {
+    return Center(child: CircularProgressIndicator(color: Colors.red,), );
+  }
+});
   }
 }
   Widget imageDialog(image, context, delivery, price, description, title, userid) {
