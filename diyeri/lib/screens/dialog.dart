@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:diari/screens/editProfile.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'login.dart';
-import '../providers/auth_provider.dart';
+// import 'package:diari/screens/editProfile.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'login.dart';
+// import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 // import 'package:badges/badges.dart';
 import '../providers/reservation_provider.dart';
-import 'package:dotted_border/dotted_border.dart';
-import 'favorites.dart';
+// import 'package:dotted_border/dotted_border.dart';
+// import 'favorites.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class Products extends StatefulWidget {
   const Products({Key? key}) : super(key: key);
@@ -19,6 +20,22 @@ class Products extends StatefulWidget {
 
 class _ProductsState extends State<Products> {
   @override
+    var path;
+    @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async{
+     Reservation_provider res = Provider.of<Reservation_provider>(context, listen: false);
+      var test = await res.downloadURLExample(res.id);
+      if (test.trim() != 'no') {
+        path =  await res.downloadURLExample(res.id);
+      }
+      else {
+        path = null;
+      }
+      print("yyyyyyyyyyyyyyyyyy $path");
+    });
+  }
   Widget build(BuildContext context) {
     return StreamBuilder(stream: FirebaseFirestore.instance.collection('reservation').snapshots(), 
     builder: (context, AsyncSnapshot snapshot){
@@ -114,7 +131,7 @@ return ClipRRect(
                             },
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
-                              child: Image.asset(widget.product_pic,
+                              child: Image.network(widget.product_pic,
                                   width: 40,
                                   height: 40,
                                   fit: BoxFit
@@ -139,7 +156,7 @@ return ClipRRect(
               child: ClipRRect(
                   borderRadius:
                   const BorderRadius.all(Radius.circular(15.0)),
-                  child: Image.asset(widget.product_pic, fit: BoxFit.cover)),
+                  child: Image.network(widget.product_pic, fit: BoxFit.cover)),
                         ),
                       )),
                 )));
@@ -173,7 +190,7 @@ return Dialog(
       SizedBox(
         width: 220,
         height: 226,
-        child: Image.asset(image,
+        child: Image.network(image,
           fit: BoxFit.cover,
         ),
       ),
@@ -224,7 +241,6 @@ return Dialog(
         Text('$value')
       ]);
     }
-
     return Container();
   },
 ) 

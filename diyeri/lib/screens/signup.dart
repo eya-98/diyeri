@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'home.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -220,7 +219,7 @@ void dispose() {
              }
     else {
       print('user is logged in');
-Navigator.push( context, MaterialPageRoute(builder: (context) => Home()));}
+Navigator.push( context, MaterialPageRoute(builder: (context) => Login()));}
              }
   ); 
           }

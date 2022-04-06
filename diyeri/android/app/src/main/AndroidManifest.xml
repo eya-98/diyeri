@@ -3,6 +3,9 @@
    <application
         android:label="diari"
         android:icon="@mipmap/ic_launcher">
+        <activity android:name="com.android.camera.CropImage"/>
+        <activity android:name="com.yalantis.ucrop.UCropActivity"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

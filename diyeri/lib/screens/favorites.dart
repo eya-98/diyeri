@@ -163,7 +163,7 @@ return ClipRRect(
                             onTap: () {},
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
-                              child: Image.asset(widget.product_pic,
+                              child: Image.network(widget.product_pic,
                                   width: 40,
                                   height: 40,
                                   fit: BoxFit
@@ -188,7 +188,7 @@ return ClipRRect(
               child: ClipRRect(
                   borderRadius:
                   const BorderRadius.all(Radius.circular(15.0)),
-                  child: Image.asset(widget.product_pic, fit: BoxFit.cover)),
+                  child: Image.network(widget.product_pic, fit: BoxFit.cover)),
                         ),
                       )),
                 )));
@@ -222,7 +222,7 @@ return Dialog(
       SizedBox(
         width: 220,
         height: 226,
-        child: Image.asset(image,
+        child: Image.network(image,
           fit: BoxFit.cover,
         ),
       ),

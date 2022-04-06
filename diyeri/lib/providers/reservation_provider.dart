@@ -1,33 +1,37 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_core/firebase_core.dart' as firebase_core;
+
 class Reservation_provider with ChangeNotifier {
+  var id;
 int count = 0;
-var id = const Uuid().v4();
 CollectionReference reservation = FirebaseFirestore.instance.collection("reservation");
-    counter() async{
+    counter(count) async{
+      count = 0;
       var reservationBody = await reservation.get();
       reservationBody.docs.forEach((element) {
     if (element['favorite'] == true){
       count += 1;
     }});
-    print('Cooooooooooooooount $count');
-      return int.parse(count.toString());
-
+      return count;
     }
-    
-    void increaseCounter(){
-      count++ ;
-      notifyListeners();
-    }
-     void decreaseCounter(){
-        count-- ;
-        notifyListeners();
-     }
-
-  addReservation(title, description, delivery, price, user_id, favorite){
-        reservation.doc(id).set({"title": title, "description": description, "delivery":delivery, "price": price, "user_id": user_id, "favorite": favorite, "id" : id, "pic" : "assets/ojja.jpg"});
+      // void increaseCounter(){
+      //   count++ ;
+      //   notifyListeners();
+      // }
+       void decreaseCounter(){
+          count-- ;
+          notifyListeners();
+       }
+  addReservation(title, description, delivery, price, user_id, favorite, path){
+    print('paaaaaaaaaaaath $path');
+    print('idddddd add reservation $id');
+    reservation.doc(id).set({"title": title, "description": description, "delivery":delivery, "price": price, "user_id": user_id, "favorite": favorite, "id" : id, "pic" : path  });
   }
   getReservationslength() async{
     final int documents = await reservation.snapshots().length;
@@ -35,12 +39,48 @@ CollectionReference reservation = FirebaseFirestore.instance.collection("reserva
   }
   favorite(reservation_id, bool favorite) async{
     reservation.doc(reservation_id).set({"favorite": favorite}, SetOptions(merge: true));
-    if (favorite == true) {
-      increaseCounter();
-    }
-    else {
+    if (favorite == false) {
       decreaseCounter();
     }
   }
-
+listoffavorites()async{
+  var list = [];
+  var idx = 0;
+  var reservationBody = await reservation.get();
+reservationBody.docs.forEach((element) {
+  if (element['favorite'] == true){
+      list.add(idx);
+      }
+      idx = idx + 1;
+      });
+return list;
+}
+generate(id) {
+  id = const Uuid().v4();
+  return id;
+}
+//upload profile picture
+  firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
+  Future<void> upload(filepath) async {
+        print('iddddddddddddd $id');
+    try {
+      
+    File file = File(filepath);
+      await storage.ref().child('food').child('$id').putFile(file);
+    } on firebase_core.FirebaseException catch (e) {
+      print(e);
+    }
+  }
+// get image
+Future<String> downloadURLExample(id) async {
+  try {
+  String downloadURL = await storage.ref().child('food').child('$id').getDownloadURL();
+    print('hahahahaahahahahahahah $downloadURL');
+    return downloadURL;
+}
+catch (e) {
+print(e);
+return 'no';
+}
+}
 }

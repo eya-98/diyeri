@@ -4,21 +4,39 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'login.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-// import 'package:badges/badges.dart';
 import '../providers/reservation_provider.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'favorites.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'dialog.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class Home extends StatefulWidget  {
   const Home({Key? key}) : super(key: key);
   @override
   MyAppBar createState() => MyAppBar();
 }
-
+enum AppState {
+  free,
+  picked,
+  cropped,
+}
 class MyAppBar extends State <Home> {
   final _scaffoldKey = GlobalKey<ScaffoldState>(); 
+  var _image;
+  late AppState state;
+  var imagePicker;
+  var _file;
+  var _sample;
+  var _lastCropped;
+  var path;
+@override
+  void initState() {
+    super.initState();
+    state = AppState.free;
+    print('staaaaaaaaate $state');
+  }
   @override
   Widget build (BuildContext context) {
     Auth_provider auth = Provider.of<Auth_provider>(context);
@@ -36,13 +54,75 @@ class MyAppBar extends State <Home> {
     send(){
   var formdata = formstate.currentState;
   if (formdata!.validate()) {
-    print("valid");
     formdata.save();
   }
   else {
     print("not valid");
   }
 }
+Future<Null> _cropImage() async {
+    File? croppedFile = await ImageCropper().cropImage(
+        //cropStyle: CropStyle.circle,
+        sourcePath: imagePicker,
+         aspectRatioPresets: Platform.isAndroid
+             ? [
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio16x9
+              ]
+            : [
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio5x3,
+                CropAspectRatioPreset.ratio5x4,
+                CropAspectRatioPreset.ratio7x5,
+                CropAspectRatioPreset.ratio16x9
+              ],
+        androidUiSettings: const AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: const IOSUiSettings(
+          title: 'Cropper',
+        ));
+    if (croppedFile != null) {
+      _image = croppedFile;
+      setState(() {
+        state = AppState.cropped;
+      });
+    }
+  }
+  _getFromGallery() async {
+        XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery, maxHeight: 1080, maxWidth: 1080);
+        setState(() {
+          imagePicker = image!.path;
+          state = AppState.picked;
+        _image = File(imagePicker);
+        });
+        
+        if (state == AppState.picked) {
+            _cropImage();
+          }
+        print("leeeeeeeeeeeee $_image");
+        if (_image != null) {
+          //ediiiiiiiiiiiiiiiiit
+          //await reservation.upload(imagePicker);
+          //path = await reservation.downloadURLExample();
+            }
+}
+  void _clearImage() {
+    imagePicker = null;
+  setState(() {
+  state = AppState.free;
+}
+);
+  }
 addDialog(context){
 return Dialog(
   shape: RoundedRectangleBorder(
@@ -165,15 +245,28 @@ return Dialog(
           child: DottedBorder(
   borderType: BorderType.RRect,
   radius: const Radius.circular(12),
-  child: const ClipRRect(
+  child:  _image == null ? const ClipRRect(
     borderRadius: BorderRadius.all(Radius.circular(12)),
     child: Center(child: Icon(Icons.add_a_photo)),
-        )
+        ):  ClipRRect(
+    borderRadius: const BorderRadius.all(Radius.circular(12)),
+    child: Center(child: Image.file(
+                _image,
+                fit: BoxFit.fill, width: 250,
+          height: 100,
+              ), ),
   )
         ),
-        onTap: () {
-          print('tapped (add photo)');
-        },
+        ),
+        onTap: () async{
+        if (state == AppState.free) {
+            _getFromGallery();
+        }
+        if (state == AppState.cropped) {
+           _clearImage();
+        }
+        print('heeeeeeeeeeeeeeeeeedhiiiiiiii $_image');
+      },
         ),
         Container (
           margin: const EdgeInsets.only(top: 10),
@@ -212,12 +305,21 @@ decoration: BoxDecoration(
           child: const Center(child: Text('Publish', style: TextStyle(fontWeight: FontWeight.bold),)),
         )
   ),
-        onTap: () {
+        onTap: ()  async{
           send();
-          if (title.text.isNotEmpty && description.text.isNotEmpty && price.text.isNotEmpty ) {
-          reservation.addReservation(title.text.trim(), description.text.trim(), dropdownvalue.trim(), price.text.trim(), auth.ID, favorite);
+          
+          if (title.text.isNotEmpty && description.text.isNotEmpty && price.text.isNotEmpty)
+          {
+          setState(() {
+            reservation.id = reservation.generate(reservation.id);
+          });
+          await reservation.upload(imagePicker);
+          path = await reservation.downloadURLExample(reservation.id);
+          if (title.text.isNotEmpty && description.text.isNotEmpty && price.text.isNotEmpty && path != 'no') {
+          reservation.addReservation(title.text.trim(), description.text.trim(), dropdownvalue.trim(), price.text.trim(), auth.ID, favorite, path);
         Navigator.of(context).pop();
           }
+           }
         },
         ),
         const SizedBox(height: 20),

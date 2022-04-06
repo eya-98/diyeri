@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'signup.dart';
 
 class Login extends StatefulWidget {
@@ -11,12 +12,27 @@ class Login extends StatefulWidget {
 createState() => Thelogin();
 }
 class Thelogin extends State<Login> {
+  @override
+
+void initState() {
+load();
+super.initState();
+}
+load()async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var _email = prefs.getString("email") ?? "";
+  var _password = prefs.getString("pwd") ?? "";
+  email.text = _email;
+  pwd.text = _password;
+  print('eeeeeeemail $_email');
+}
+
+  TextEditingController email =  TextEditingController();
+  TextEditingController pwd =  TextEditingController();
   bool Obscure = true;
-    bool isChecked = false;
-    GlobalKey<FormState> formstate =  GlobalKey<FormState>();
-    TextEditingController email =  TextEditingController();
-    TextEditingController pwd =  TextEditingController();
-    send(){
+  bool isChecked = false;
+  GlobalKey<FormState> formstate =  GlobalKey<FormState>();
+  send(){
   var formdata = formstate.currentState;
   if (formdata!.validate()) {
     print("valid");
@@ -107,7 +123,6 @@ child: Column(
               WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {
                 Obscure = !Obscure;
               }));
-                    print("aaaaaaaaaa");
 
       print(Obscure);
             },
@@ -137,7 +152,8 @@ child: Column(
         ),
            const SizedBox(height: 25.0,),
                Row( children : [
-       Checkbox( value: isChecked,  
+       Checkbox(
+       activeColor: const Color(0xffffaa00), value: isChecked,  
        onChanged: (value) {
          setState(() {
            isChecked = !isChecked;
@@ -157,6 +173,11 @@ child: Column(
           height: 33, width: 250, child: const Center(child: Text('Login', style: TextStyle(fontSize: 12))),), 
         onTap: () async {
           send;
+          if (isChecked == true) {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.setString("email", email.text);
+            prefs.setString("pwd", pwd.text);
+          }
           await auth.Login(email.text.trim(), pwd.text.trim());
           FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
