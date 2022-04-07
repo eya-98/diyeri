@@ -11,6 +11,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'dialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'About.dart';
 
 class Home extends StatefulWidget  {
   const Home({Key? key}) : super(key: key);
@@ -305,7 +306,6 @@ decoration: BoxDecoration(
           });
           await reservation.upload(path);
           path = await reservation.downloadURLExample(reservation.id);
-         
           if (title.text.isNotEmpty && description.text.isNotEmpty && price.text.isNotEmpty && path != 'no') {
           reservation.addReservation(title.text.trim(), description.text.trim(), dropdownvalue.trim(), price.text.trim(), auth.ID, favorite, path);
         Navigator.of(context).pop();
@@ -410,7 +410,10 @@ decoration: BoxDecoration(
             leading: const Icon(Icons.info_outlined),
             title: const Text('About Us', style: TextStyle(fontSize: 18),),
             trailing: const Icon(Icons.arrow_right),
-            onTap: () {},
+            onTap: () {
+                            Navigator.push( context, MaterialPageRoute(builder: (context) => About())
+              );
+            },
            ),
            ListTile(
             leading: const Icon(Icons.logout),

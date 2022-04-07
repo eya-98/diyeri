@@ -23,12 +23,12 @@ enum AppState {
 }
 
 class TheEdit extends State<EditProfile> {
-  bool pic = false;
+  bool pic = false; 
   var _image = null;
   late AppState state;
   final cropKey = GlobalKey<CropState>();
   var _file;
-  
+  bool Obscure = true;
   var path;
   var _sample;
   var _lastCropped;
@@ -39,6 +39,7 @@ class TheEdit extends State<EditProfile> {
     state = AppState.free;
   }
   Widget build(BuildContext context) {
+    
     Auth_provider auth = Provider.of<Auth_provider>(context);
 
   
@@ -257,29 +258,37 @@ class TheEdit extends State<EditProfile> {
                 controller: email,
               ),
             ),
-            const SizedBox(
-              height: 25.0,
+      const SizedBox(height: 25.0,),
+      SizedBox(
+          width: 370,
+         child: TextFormField(
+          decoration: InputDecoration(
+            suffixIcon: InkWell(
+            child: const Icon(Icons.visibility,
+            color: Color(0xffffaa00),
             ),
-            SizedBox(
-              width: 370,
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(15.0),
-                      topRight: Radius.circular(15.0),
-                    ),
-                    borderSide: BorderSide(color: Color(0xffffaa00)),
-                  ),
-                  hintText: "Enter your password",
-                  hintStyle: TextStyle(fontSize: 14),
-                  prefixIcon: Icon(Icons.lock, color: Color(0xffffaa00)),
-                ),
-                obscureText: true,
-                textInputAction: TextInputAction.next,
-                controller: pwd,
-              ),
-            ),
+            onTap: () {
+              WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {
+                Obscure = !Obscure;
+              }));
+            },
+        ),
+          focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(15.0),
+          topRight: Radius.circular(15.0),
+    ),
+    borderSide: BorderSide(color: Color(0xffffaa00)),
+  ),
+          hintText: "Enter your password",
+          hintStyle: const TextStyle(fontSize: 14),
+          prefixIcon: const Icon(Icons.lock, color: Color(0xffffaa00)),
+          ),
+          obscureText: Obscure,
+          textInputAction: TextInputAction.next,
+          controller: pwd,
+          ),
+      ),
             const SizedBox(
               height: 25.0,
             ),

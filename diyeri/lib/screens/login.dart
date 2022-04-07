@@ -123,8 +123,6 @@ child: Column(
               WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {
                 Obscure = !Obscure;
               }));
-
-      print(Obscure);
             },
         ),
             focusedBorder: const OutlineInputBorder(
