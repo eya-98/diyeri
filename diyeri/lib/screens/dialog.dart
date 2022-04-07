@@ -132,13 +132,19 @@ return ClipRRect(
                             },),
                             onTap: () {
                             },
-                            leading: ClipRRect(
+                            leading: GestureDetector(child: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
                               child: Image.network(snapshot.data.toString(),
                                   width: 40,
                                   height: 40,
                                   fit: BoxFit
                                       .cover), 
+                            ),
+                            onTap: ()async{
+                              await showDialog(
+            context: context,
+            builder: (_) => profileimg(snapshot.data.toString(), context));
+        },
                             ),
                             title: Text(
                               "${widget.product_price} TND",
@@ -264,3 +270,17 @@ return Dialog(
   )
 );
   }
+  Widget profileimg(image, context) {
+ return Dialog(
+   backgroundColor: Colors.transparent,
+  child: SizedBox(height: 350, width: 350,child:  ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+    //backgroundColor: Colors.transparent, 
+    child: 
+  Image.network(image,
+      fit: BoxFit.fill,
+      width: 80,
+      height: 80,
+    ),
+  )));
+}

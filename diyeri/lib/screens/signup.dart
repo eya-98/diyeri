@@ -208,7 +208,6 @@ void dispose() {
         onTap: ()async {
           send;
            await auth.SignUp(email.text.trim(), pwd.text.trim(), adress.text.trim(), phone.text.trim(), fullname.text.trim());
-
           await FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
       var snackBar = const SnackBar(
