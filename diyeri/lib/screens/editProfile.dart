@@ -32,6 +32,13 @@ class TheEdit extends State<EditProfile> {
   var path;
   var _sample;
   var _lastCropped;
+  
+    GlobalKey<FormState> formstate = GlobalKey<FormState>();
+    TextEditingController email = TextEditingController();
+    TextEditingController pwd = TextEditingController();
+    TextEditingController phone = TextEditingController();
+    TextEditingController adress = TextEditingController();
+    TextEditingController fullname = TextEditingController();
   String userpic = '';
   @override
   void initState() {
@@ -47,14 +54,6 @@ class TheEdit extends State<EditProfile> {
     var link = await auth.downloadURLExample();
     return link;
   }
-
-
-    GlobalKey<FormState> formstate = GlobalKey<FormState>();
-    TextEditingController email = TextEditingController();
-    TextEditingController pwd = TextEditingController();
-    TextEditingController phone = TextEditingController();
-    TextEditingController adress = TextEditingController();
-    TextEditingController fullname = TextEditingController();
     @override
 //// crop image
     Future<Null> _cropImage() async {

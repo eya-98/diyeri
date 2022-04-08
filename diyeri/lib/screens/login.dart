@@ -144,7 +144,6 @@ child: Column(
           ),
           textInputAction: TextInputAction.go,
           controller: pwd,
-          
           ),)])
         )
         ),
@@ -177,10 +176,9 @@ child: Column(
             prefs.setString("pwd", pwd.text);
           }
           await auth.Login(email.text.trim(), pwd.text.trim());
-          FirebaseAuth.instance.authStateChanges().listen((User? user) {
+          FirebaseAuth.instance.authStateChanges().listen((User? user) async{
+            await Future.delayed(const Duration(seconds: 2), (){});
     if (user == null) {
-     // print(auth.error); {
-       
       var snackBar = const SnackBar(
   content: Text("please verify your Credential"),
 );

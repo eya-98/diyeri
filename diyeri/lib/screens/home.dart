@@ -421,7 +421,9 @@ decoration: BoxDecoration(
             trailing: const Icon(Icons.arrow_right),
             onTap: () async{
               auth.SignOut();
-          FirebaseAuth.instance.authStateChanges().listen((User? user) {
+          FirebaseAuth.instance.authStateChanges().listen((User? user) async{
+            
+            await Future.delayed(const Duration(seconds: 2), (){});
     if (user == null) {
             var snackBar = const SnackBar(
             content: Text('Succesfully Logout'),);

@@ -22,8 +22,7 @@ class  StartState extends State<First> {
                     width: 250,
                     height: 250,
                     fit: BoxFit.fill,
-)
-                
+) 
       )  ),);
   }
   @override
