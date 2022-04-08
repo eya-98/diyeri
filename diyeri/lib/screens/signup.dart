@@ -4,21 +4,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
-
 class SignUp extends StatefulWidget {
   @override
 createState() => TheSignUp();
 }
 class TheSignUp extends State<SignUp> {
-  Widget build(BuildContext context) {
-      Auth_provider auth = Provider.of<Auth_provider>(context);
+    bool Obscure = true;
     GlobalKey<FormState> formstate =  GlobalKey<FormState>();
     TextEditingController email =  TextEditingController();
     TextEditingController pwd =  TextEditingController();
     TextEditingController phone =  TextEditingController();
     TextEditingController adress =  TextEditingController();
     TextEditingController fullname =  TextEditingController();
-
     send(){
   var formdata = formstate.currentState;
   if (formdata!.validate()) {
@@ -35,12 +32,14 @@ void dispose() {
  // fullname.dispose();
   phone.dispose();
   adress.dispose();
-    super.dispose();};
+    super.dispose();}
 
-    return Scaffold(
+  Widget build(BuildContext context) {
+      Auth_provider auth = Provider.of<Auth_provider>(context);
+      return Scaffold(
       body: SingleChildScrollView(
         child:Column( children: [
-                    const SizedBox(height: 50),
+          const SizedBox(height: 50),
           Row(
           children: [
             const SizedBox(width: 10,),
@@ -114,6 +113,7 @@ void dispose() {
       SizedBox(
           width: 370,
          child: TextFormField(
+            obscureText: Obscure, 
             validator: (text){ 
               RegExp regex =
         RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])');
@@ -126,8 +126,8 @@ void dispose() {
               }
               return null;
             },
-           decoration: const InputDecoration(
-           focusedBorder: OutlineInputBorder(
+           decoration: InputDecoration(
+           focusedBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(15.0),
           topRight: Radius.circular(15.0),
@@ -135,10 +135,19 @@ void dispose() {
     borderSide: BorderSide(color: Color(0xffffaa00)),
   ),
           hintText: "Enter your password",
-          hintStyle: TextStyle(fontSize: 14),
-          prefixIcon: Icon(Icons.lock, color: Color(0xffffaa00)),
+          hintStyle: const TextStyle(fontSize: 14),
+          prefixIcon: const Icon(Icons.lock, color: Color(0xffffaa00)),
+          suffixIcon: InkWell(
+            child: const Icon(Icons.visibility,
+            color: Color(0xffffaa00),
+            ),
+            onTap: () {
+              setState(() {
+                Obscure = !Obscure;
+            });
+            },
+        ),
           ),
-          obscureText: true,
           textInputAction: TextInputAction.next,
           controller: pwd,
           ),

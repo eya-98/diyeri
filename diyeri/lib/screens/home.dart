@@ -411,7 +411,7 @@ decoration: BoxDecoration(
             title: const Text('About Us', style: TextStyle(fontSize: 18),),
             trailing: const Icon(Icons.arrow_right),
             onTap: () {
-                            Navigator.push( context, MaterialPageRoute(builder: (context) => About())
+                            Navigator.push( context, MaterialPageRoute(builder: (context) => Login())
               );
             },
            ),

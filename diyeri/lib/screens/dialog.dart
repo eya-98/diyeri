@@ -9,7 +9,9 @@ import '../providers/reservation_provider.dart';
 // import 'package:dotted_border/dotted_border.dart';
 // import 'favorites.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+//import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+
 
 class Products extends StatefulWidget {
   const Products({Key? key}) : super(key: key);
@@ -253,7 +255,10 @@ return Dialog(
       return Row (children: [
         const SizedBox(height: 5),
         const Icon(Icons.phone),
-        Text('$value')
+         GestureDetector (child : Text('$value'),
+        onTap: () async {
+          bool? res = await FlutterPhoneDirectCaller.callNumber('$value');
+        },)
       ]);
     }
     return Container();

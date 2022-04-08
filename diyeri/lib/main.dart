@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/login.dart';
+import 'screens/splash.dart';
 import 'providers/auth_provider.dart';
 import 'providers/reservation_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
       title: 'Diyeri',
       // home: Login()
-      home: Login() 
+      home: First() 
       )
   );
 }
