@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'package:diari/screens/editProfile.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'login.dart';
-// import '../providers/auth_provider.dart';
+ import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 // import 'package:badges/badges.dart';
 import '../providers/reservation_provider.dart';
@@ -26,17 +23,6 @@ class _ProductsState extends State<Products> {
     @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) async{
-    //  Reservation_provider res = Provider.of<Reservation_provider>(context, listen: false);
-    //   var test = await res.downloadURLExample(res.id);
-    //   if (test.trim() != 'no') {
-    //     path =  await res.downloadURLExample(res.id);
-    //   }
-    //   else {
-    //     path = null;
-    //   }
-    //   print("yyyyyyyyyyyyyyyyyy $path");
-    // });
   }
 
   Widget build(BuildContext context) {
@@ -56,7 +42,7 @@ class _ProductsState extends State<Products> {
              product_pic: reservationDocs[index].data()['pic'],
              product_price: reservationDocs[index].data()['price'],
              product_description: reservationDocs[index].data()['description'],
-             product_favorite: reservationDocs[index].data()['favorite'],
+             //product_favorite: reservationDocs[index].data()['favorite'],
              userid: reservationDocs[index].data()['user_id'],
              reservid: reservationDocs[index].data()['id'],
            );
@@ -104,13 +90,21 @@ class Product extends StatefulWidget {
 }
 
 class _ProductState extends State<Product> {
+    
+
   @override
   Widget build(BuildContext context) {
+
+Auth_provider auth = Provider.of<Auth_provider>(context);
+  CollectionReference user = FirebaseFirestore.instance.collection("user").doc(auth.currentUser.uid).collection('favorites');
 Reservation_provider reservation = Provider.of<Reservation_provider>(context);
 return FutureBuilder(future: reservation.downloadprofileimg(context, widget.userid), 
 builder: (context, snapshot) {
-if (snapshot.connectionState == ConnectionState.done && snapshot.data.toString().trim() != 'no') {
-return ClipRRect(
+if (snapshot.connectionState == ConnectionState.done 
+//&& snapshot.data.toString().trim() != 'no'
+) {
+return 
+ClipRRect(
         borderRadius: BorderRadius.circular(25),
         child: Card(
                 child: Material(
@@ -124,23 +118,33 @@ return ClipRRect(
                           ),
                           child: ListTile(
                              trailing: IconButton(constraints: const BoxConstraints(), padding: EdgeInsets.zero, 
-                             icon: widget.product_favorite == false ? const Icon(Icons.favorite_border, color: Colors.white, size: 25,) : const Icon(Icons.favorite, color: Colors.white, size: 25,), 
-                             onPressed: () async {
+                             icon: 
+                             FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      future: FirebaseFirestore.instance.collection('user').doc(auth.currentUser.uid).collection('favorites').doc(widget.reservid).get(),
+      builder: (context, snapshot) {
+      var userDocument = snapshot.data;
+      var value = userDocument?['favorite']; 
+      
+        return value == false ? const Icon(Icons.favorite_border, color: Colors.white, size: 25,) : const Icon(Icons.favorite, color: Colors.white, size: 25,);
+      }
+                             
+  )
+                             //widget.product_favorite == false ? const Icon(Icons.favorite_border, color: Colors.white, size: 25,) : const Icon(Icons.favorite, color: Colors.white, size: 25,), 
+                             ,onPressed: () async {
                               setState(() {
                                 widget.product_favorite = !widget.product_favorite;
                               });
-                              reservation.favorite(widget.reservid, widget.product_favorite);
+                              reservation.favorite(auth.ID, widget.reservid, widget.product_favorite);
                               
                             },),
                             onTap: () {
                             },
                             leading: GestureDetector(child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.network(snapshot.data.toString(),
+                              borderRadius: snapshot.data.toString().trim() != 'no' ? BorderRadius.circular(20): BorderRadius.circular(30),
+                              child:  snapshot.data.toString().trim() != 'no' ? Image.network(snapshot.data.toString(),
                                   width: 40,
                                   height: 40,
-                                  fit: BoxFit
-                                      .cover), 
+                                  fit: BoxFit.cover): Image.asset('assets/unknown.jpg', fit: BoxFit.cover, width: 40, height: 40), 
                             ),
                             onTap: ()async{
                               await showDialog(
