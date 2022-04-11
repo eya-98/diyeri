@@ -37,12 +37,12 @@ class _ProductsState extends State<Products> {
         const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index) {
            return Product(
-             product_delivery: reservationDocs[index].data()['delivery'],
-             product_name: reservationDocs[index].data()['title'],
-             product_pic: reservationDocs[index].data()['pic'],
-             product_price: reservationDocs[index].data()['price'],
-             product_description: reservationDocs[index].data()['description'],
-             //product_favorite: reservationDocs[index].data()['favorite'],
+             productDelivery: reservationDocs[index].data()['delivery'],
+             productName: reservationDocs[index].data()['title'],
+             productPic: reservationDocs[index].data()['pic'],
+             productPrice: reservationDocs[index].data()['price'],
+             productDescription: reservationDocs[index].data()['description'],
+             productFavorite: reservationDocs[index].data()['favorite'],
              userid: reservationDocs[index].data()['user_id'],
              reservid: reservationDocs[index].data()['id'],
            );
@@ -66,22 +66,22 @@ class _ProductsState extends State<Products> {
 }
 
 class Product extends StatefulWidget {
-  final product_name;
-  final product_pic;
-  final product_price;
-  final product_delivery;
-  final product_description;
+  final productName;
+  final productPic;
+  final productPrice;
+  final productDelivery;
+  final productDescription;
   final userid;
   final reservid;
-  bool product_favorite;
+  bool productFavorite;
   Product(
       {
-      this.product_delivery,
-      this.product_name,
-      this.product_pic,
-      this.product_price,
-      this.product_description,
-      this.product_favorite=false,
+      this.productDelivery,
+      this.productName,
+      this.productPic,
+      this.productPrice,
+      this.productDescription,
+      this.productFavorite=false,
       this.userid, 
       this.reservid});
 
@@ -94,17 +94,13 @@ class _ProductState extends State<Product> {
 
   @override
   Widget build(BuildContext context) {
-
 Auth_provider auth = Provider.of<Auth_provider>(context);
-  CollectionReference user = FirebaseFirestore.instance.collection("user").doc(auth.currentUser.uid).collection('favorites');
+ // CollectionReference user = FirebaseFirestore.instance.collection("user").doc(auth.currentUser.uid).collection('favorites');
 Reservation_provider reservation = Provider.of<Reservation_provider>(context);
 return FutureBuilder(future: reservation.downloadprofileimg(context, widget.userid), 
 builder: (context, snapshot) {
-if (snapshot.connectionState == ConnectionState.done 
-//&& snapshot.data.toString().trim() != 'no'
-) {
-return 
-ClipRRect(
+if (snapshot.connectionState == ConnectionState.done) { 
+  return ClipRRect(
         borderRadius: BorderRadius.circular(25),
         child: Card(
                 child: Material(
@@ -118,33 +114,24 @@ ClipRRect(
                           ),
                           child: ListTile(
                              trailing: IconButton(constraints: const BoxConstraints(), padding: EdgeInsets.zero, 
-                             icon: 
-                             FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      future: FirebaseFirestore.instance.collection('user').doc(auth.currentUser.uid).collection('favorites').doc(widget.reservid).get(),
-      builder: (context, snapshot) {
-      var userDocument = snapshot.data;
-      var value = userDocument?['favorite']; 
-      
-        return value == false ? const Icon(Icons.favorite_border, color: Colors.white, size: 25,) : const Icon(Icons.favorite, color: Colors.white, size: 25,);
-      }
+                             icon: Icon(Icons.abc),
+                            //  StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      // stream: FirebaseFirestore.instance.collection('user').doc(auth.currentUser.uid).collection('favorites').snapshots(),
+      //builder: (context, snapshot) {
+      //var userDocument = snapshot.length;
+      //var value = userDocument?['favorite']; 
+      //// }
                              
-  )
-                             //widget.product_favorite == false ? const Icon(Icons.favorite_border, color: Colors.white, size: 25,) : const Icon(Icons.favorite, color: Colors.white, size: 25,), 
-                             ,onPressed: () async {
-                              setState(() {
-                                widget.product_favorite = !widget.product_favorite;
-                              });
-                              reservation.favorite(auth.ID, widget.reservid, widget.product_favorite);
-                              
-                            },),
-                            onTap: () {
-                            },
-                            leading: GestureDetector(child: ClipRRect(
-                              borderRadius: snapshot.data.toString().trim() != 'no' ? BorderRadius.circular(20): BorderRadius.circular(30),
-                              child:  snapshot.data.toString().trim() != 'no' ? Image.network(snapshot.data.toString(),
-                                  width: 40,
-                                  height: 40,
-                                  fit: BoxFit.cover): Image.asset('assets/unknown.jpg', fit: BoxFit.cover, width: 40, height: 40), 
+  // ) 
+  onPressed: () async {
+           setState(() {
+              widget.productFavorite = !widget.productFavorite; });
+              reservation.favorite(auth.ID, widget.reservid, widget.productFavorite);  
+                        },), onTap: () {},
+                      leading: GestureDetector(child: ClipRRect(
+                      borderRadius: snapshot.data.toString().trim() != 'no' ? BorderRadius.circular(20): BorderRadius.circular(30),
+                      child:  snapshot.data.toString().trim() != 'no' ? Image.network(snapshot.data.toString(),
+                        width: 40, height: 40, fit: BoxFit.cover): Image.asset('assets/unknown.jpg', fit: BoxFit.cover, width: 40, height: 40), 
                             ),
                             onTap: ()async{
                               await showDialog(
@@ -153,7 +140,7 @@ ClipRRect(
         },
                             ),
                             title: Text(
-                              "${widget.product_price} TND",
+                              "${widget.productPrice} TND",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -166,19 +153,19 @@ ClipRRect(
                           onTap: () async {
           await showDialog(
             context: context,
-            builder: (_) => imageDialog(widget.product_pic ,context, widget.product_delivery, widget.product_price, widget.product_description, widget.product_name, widget.userid));
+            builder: (_) => imageDialog(widget.productPic ,context, widget.productDelivery, widget.productPrice, widget.productDescription, widget.productName, widget.userid));
         },
               child: ClipRRect(
                   borderRadius:
                   const BorderRadius.all(Radius.circular(15.0)),
-                  child: Image.network(widget.product_pic, fit: BoxFit.cover)),
+                  child: Image.network(widget.productPic, fit: BoxFit.cover)),
                         ),
                       )),
                 )));
   }
   
   else {
-    return Center(child: CircularProgressIndicator(color: Colors.red,), );
+    return const Center(child: CircularProgressIndicator(color: Colors.red,), );
   }
 });
   }
