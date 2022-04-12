@@ -1,4 +1,4 @@
-# :plate_with_cutlery: diari
+# :plate_with_cutlery:  diyeri
 
 <img src="assets/logo2.png">
 
