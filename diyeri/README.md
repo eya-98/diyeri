@@ -28,7 +28,9 @@ This app uses a proper login Authentication using <mark>Firebase Authentication<
 # :handshake: Contributors
 
 - Eya Nani
-[Github] (https://github.com/eya-98) - [LinkedIn] (https://www.linkedin.com/in/eya-nani-534996154/)
+
+[Github](https://github.com/eya-98) - [LinkedIn](https://www.linkedin.com/in/eya-nani-534996154/)
 
 - Emna Bouaziz
-[Github] (https://github.com/emnabz) - [LinkedIn] (https://www.linkedin.com/in/emna-bouaziz-4634771b7/)
+
+[Github](https://github.com/emnabz) - [LinkedIn](https://www.linkedin.com/in/emna-bouaziz-4634771b7/)
