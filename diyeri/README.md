@@ -1,16 +1,34 @@
-# diari
+# :plate_with_cutlery: diari
 
-A new Flutter project.
+<img src="assets/logo2.png">
 
-## Getting Started
+Our mobile application is based on a customer-to-customer business strategy that connects different actors in the Tunisian community interested in homemade food for sale and purchase.
 
-This project is a starting point for a Flutter application.
+# Technologies Used
 
-A few resources to get you started if this is your first Flutter project:
+- Frontend - Flutter
+- Backend  - Firebase
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+### Storage Used: 
+- Firebase Storage
+### Databases:
+- Firestore Database (Firebase)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This app uses a proper login Authentication using <mark>Firebase Authentication</mark>.        
+
+# Application features
+
+- Simple UI for food delivery app's
+- Can add one or more food in the favorite section
+
+## Home Screen & Favorite Screen
+
+<img src="assets/favorite.png">  <img src="assets/home.png">
+
+# :handshake: Contributors
+
+- Eya Nani
+[Github] (https://github.com/eya-98) - [LinkedIn] (https://www.linkedin.com/in/eya-nani-534996154/)
+
+- Emna Bouaziz
+[Github] (https://github.com/emnabz) - [LinkedIn] (https://www.linkedin.com/in/emna-bouaziz-4634771b7/)
