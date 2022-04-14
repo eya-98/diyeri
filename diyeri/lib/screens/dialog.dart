@@ -90,12 +90,21 @@ class Product extends StatefulWidget {
 }
 
 class _ProductState extends State<Product> {
-    
-
+  var favorite;
+  Future <IconData> iconfav (userid, reservid)async{
+    Reservation_provider reservation = Provider.of<Reservation_provider>(context);
+      bool exist = await reservation.favexist(userid, reservid);
+    if ( exist == true ) {
+       return Icons.favorite;
+}
+      else {
+      return Icons.favorite_border_outlined;
+                  }
+                  }
   @override
   Widget build(BuildContext context) {
+  bool refresh = false;
 Auth_provider auth = Provider.of<Auth_provider>(context);
- // CollectionReference user = FirebaseFirestore.instance.collection("user").doc(auth.currentUser.uid).collection('favorites');
 Reservation_provider reservation = Provider.of<Reservation_provider>(context);
 return FutureBuilder(future: reservation.downloadprofileimg(context, widget.userid), 
 builder: (context, snapshot) {
@@ -114,21 +123,22 @@ if (snapshot.connectionState == ConnectionState.done) {
                           ),
                           child: ListTile(
                              trailing: IconButton(constraints: const BoxConstraints(), padding: EdgeInsets.zero, 
-                             icon: Icon(Icons.abc),
-                            //  StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      // stream: FirebaseFirestore.instance.collection('user').doc(auth.currentUser.uid).collection('favorites').snapshots(),
-      //builder: (context, snapshot) {
-      //var userDocument = snapshot.length;
-      //var value = userDocument?['favorite']; 
-      //// }
-                             
-  // ) 
+                             icon: StreamBuilder(stream: Stream.fromFuture(iconfav(auth.currentUser.uid, widget.reservid)), builder: ((context, AsyncSnapshot snapshot){
+                               return Icon(snapshot.data, color: Colors.white,);
+                             })),
   onPressed: () async {
-           setState(() {
-              widget.productFavorite = !widget.productFavorite; });
-              reservation.favorite(auth.ID, widget.reservid, widget.productFavorite);  
-                        },), onTap: () {},
-                      leading: GestureDetector(child: ClipRRect(
+    print("eeeeee ${widget.reservid}");
+         if (await reservation.favexist(auth.currentUser.uid, widget.reservid) == true) {
+            await reservation.deleteFav(auth.currentUser.uid, widget.reservid);
+           }
+           else {
+             await reservation.addFav(auth.currentUser.uid, widget.reservid);
+           }    
+          setState(() {
+            refresh = !refresh;
+    });
+            },), onTap: () {},
+               leading: GestureDetector(child: ClipRRect(
                       borderRadius: snapshot.data.toString().trim() != 'no' ? BorderRadius.circular(20): BorderRadius.circular(30),
                       child:  snapshot.data.toString().trim() != 'no' ? Image.network(snapshot.data.toString(),
                         width: 40, height: 40, fit: BoxFit.cover): Image.asset('assets/unknown.jpg', fit: BoxFit.cover, width: 40, height: 40), 
@@ -236,7 +246,6 @@ return Dialog(
         Container( 
           margin: delivery == 'yes' ? const EdgeInsets.only(left: 30, top: 2): const EdgeInsets.only(left: 30, top: 6), 
           child: Row(children : [
-           //Icon(Icons.phone), 
             FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
   future: FirebaseFirestore.instance.collection('user').doc(userid).get(),
   builder: (_, snapshot) {

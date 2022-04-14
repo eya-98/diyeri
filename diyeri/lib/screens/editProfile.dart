@@ -32,7 +32,6 @@ class TheEdit extends State<EditProfile> {
   var path;
   var _sample;
   var _lastCropped;
-  
     GlobalKey<FormState> formstate = GlobalKey<FormState>();
     TextEditingController email = TextEditingController();
     TextEditingController pwd = TextEditingController();

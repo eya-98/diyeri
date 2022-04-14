@@ -36,7 +36,6 @@ class MyAppBar extends State <Home> {
   void initState() {
     super.initState();
     state = AppState.free;
-    print('staaaaaaaaate $state');
   }
   @override
   Widget build (BuildContext context) {
@@ -257,7 +256,6 @@ return Dialog(
         if (state == AppState.cropped) {
            _clearImage();
         }
-        print('heeeeeeeeeeeeeeeeeedhiiiiiiii $_image');
       },
         ),
         Container (
@@ -308,6 +306,7 @@ decoration: BoxDecoration(
           path = await reservation.downloadURLExample(reservation.id);
           if (title.text.isNotEmpty && description.text.isNotEmpty && price.text.isNotEmpty && path != 'no') {
           reservation.addReservation(title.text.trim(), description.text.trim(), dropdownvalue.trim(), price.text.trim(), auth.ID, favorite, path);
+        //reservation.addFavoriteToUser(auth.currentUser.uid, reservation.id);
         Navigator.of(context).pop();
           }
           setState(() {
@@ -347,11 +346,12 @@ decoration: BoxDecoration(
             Column ( children: [
              const SizedBox(height: 28), IconButton(
               icon: const Icon(Icons.favorite_border, color:Color(0xffffcc00), size: 40,),
-              onPressed: () async{
-                var length = await reservation.listoffavorites();
-                if (length != null) {
-                  reservation.count = length.length;
-                }
+              onPressed: () {
+              //  async{
+                // var length = await reservation.listoffavorites();
+                // if (length != null) {
+                //   reservation.count = length.length;
+                // }
                 Navigator.push(context,
           MaterialPageRoute(builder: (context) => Favorites()),
               );
@@ -388,10 +388,7 @@ decoration: BoxDecoration(
              title: const Text('My Profile', style: TextStyle(fontSize: 18),),
              trailing: const Icon(Icons.arrow_right),
              onTap: () async{
-               Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => EditProfile()),
-  );
+               Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfile()),);
              },
            ),
            ListTile(

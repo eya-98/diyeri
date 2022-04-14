@@ -4,18 +4,16 @@ import 'package:flutter/material.dart';
 import '../providers/reservation_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../providers/auth_provider.dart';
-
-
 class Favorites extends StatefulWidget {
   @override
 createState() => heart();
 }
 class heart extends State<Favorites> {
-  
   @override
   Widget build(BuildContext context) {
+  //var length;
+    Auth_provider auth = Provider.of<Auth_provider>(context);
     Reservation_provider reservation = Provider.of<Reservation_provider>(context);
     return Scaffold(
       body: Column(
@@ -35,11 +33,16 @@ class heart extends State<Favorites> {
      },
      ), 
      const SizedBox(height: 150, width: 35),
-     
+     StreamBuilder(stream: reservation.favslength(auth.currentUser.uid), builder: (context, AsyncSnapshot snapshot) { 
+       var length = snapshot.data;
+        return 
         Center (child: Text(
-          'List of Favorites(${reservation.count})',
-         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
-         )
+          'List of Favorites(${length})',
+         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),)
+         );
+         
+     }
+     )
      ]
           ),Expanded( 
             child: favs() 
@@ -55,24 +58,21 @@ class heart extends State<Favorites> {
 }
 
 class _ProductsState extends State<favs> {
-  
   @override
   Widget build(BuildContext context) {
+    Auth_provider auth = Provider.of<Auth_provider>(context);
     Reservation_provider reservation = Provider.of<Reservation_provider>(context);
-    return StreamBuilder(stream: FirebaseFirestore.instance.collection('reservation').snapshots(), 
+     return StreamBuilder(stream: FirebaseFirestore.instance.collection('reservation').snapshots(), 
     builder: (context, AsyncSnapshot snapshot){
-    if (snapshot.hasData) {
+    if (snapshot.hasData ) {
       final reservationDocs = snapshot.data.docs;
-      reservation.counter(reservation.count);
       {
-        return FutureBuilder(future: reservation.listoffavorites(),
+        return FutureBuilder(future: reservation.listoffavorites(auth.currentUser.uid),
           builder: (context, AsyncSnapshot snapshot1){
-        var length = snapshot1.data;
-        //print(reservation.counter(reservation.count));
-        //print(reservation.count);
-        if (length != null && length?.length > 0) {
+        var data = snapshot1.data;
+        if (data != null && data?.length > 0) {
         return GridView.builder(
-        itemCount: length.length,
+        itemCount: data.length,
     dragStartBehavior: DragStartBehavior.down,
         gridDelegate:
         const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
@@ -109,6 +109,8 @@ class favorite extends StatefulWidget {
   final product_pic;
   final product_price;
   final product_delivery;
+  
+      bool refresh = false;
   final product_description;
   final userid;
   final reservid;
@@ -123,14 +125,37 @@ class favorite extends StatefulWidget {
       this.product_favorite=false,
       this.userid, 
       this.reservid});
-
   @override
   State<favorite> createState() => _ProductState();
 }
 
 class _ProductState extends State<favorite> {
+  
+//  void initState() {
+//     super.initState();
+//     fav();
+// }
+
+  
   @override
   Widget build(BuildContext context) {
+    Future <IconData> iconfav (userid, reservid)async{
+    Reservation_provider reservation = Provider.of<Reservation_provider>(context);
+      bool exist = await reservation.favexist(userid, reservid);
+      widget.product_favorite = exist;
+    if ( exist == true ) {
+       return Icons.favorite;
+}
+      else {
+      return Icons.favorite_border_outlined;
+                  }
+                  }
+fav () async{
+Reservation_provider reservation = Provider.of<Reservation_provider>(context);
+    Auth_provider auth = Provider.of<Auth_provider>(context);
+widget.product_favorite = await reservation.favexist(auth.currentUser.uid, widget.reservid);
+}
+Auth_provider auth = Provider.of<Auth_provider>(context);
 Reservation_provider reservation = Provider.of<Reservation_provider>(context);
 return FutureBuilder(future: reservation.downloadprofileimg(context, widget.userid), 
 builder: (context, snapshot) {
@@ -149,14 +174,21 @@ return ClipRRect(
                           ),
                           child: ListTile(
                              trailing: IconButton(constraints: const BoxConstraints(), padding: EdgeInsets.zero, 
-                             icon: widget.product_favorite == false ? const Icon(Icons.favorite_border, color: Colors.white, size: 25,) : const Icon(Icons.favorite, color: Colors.white, size: 25,), 
-                             onPressed: () async {
-                              setState(() {
-                                widget.product_favorite = !widget.product_favorite;
-                              });
-                              reservation.favorite(widget.reservid, widget.product_favorite);
-                              
-                            },),
+                             icon:  FutureBuilder(future: iconfav(auth.currentUser.uid, widget.reservid), builder: ((context, AsyncSnapshot snapshot){
+                               return Icon(snapshot.data, color: Colors.white,);
+                             })),
+  onPressed: ()  async{
+            await reservation.deleteFav(auth.currentUser.uid, widget.reservid);
+            print("thiiiiiiis ${widget.reservid} ... ${widget.product_favorite}");
+              setState(() {
+                widget.product_favorite = !widget.product_favorite;
+    });
+Navigator.pushAndRemoveUntil(
+  context,
+  MaterialPageRoute(builder: (context) => Favorites()),
+  (Route<dynamic> route) => false,
+);
+            },),
                             onTap: () {
                             },
                             leading: ClipRRect(

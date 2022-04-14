@@ -49,7 +49,6 @@ class Auth_provider with ChangeNotifier {
       print(e);
     }
   }
-
   EditProfile(email, password, adress, phone, fullname) {
     ID = currentUser.uid;
     if (email.length > 0) {
