@@ -1,4 +1,4 @@
-name: diari
+name: diyeri
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -88,6 +88,8 @@ flutter:
     - assets/contributor-pic.jpeg
     - assets/contributor-pic2.jpeg
     - assets/lottie.json
+    - assets/home.png
+    - assets/favorite.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
