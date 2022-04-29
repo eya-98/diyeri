@@ -23,7 +23,7 @@ This app uses a proper login Authentication using <mark>Firebase Authentication<
 
 ## Home Screen & Favorite Screen
 
-<img src="assets/favorite.png" alt="logo" width="200" height="400"/> <img src="assets/home.png" alt="logo" width="200" height="400" />
+<img src="assets/home.png" alt="logo" width="200" height="400" /> <img src="assets/favorite.png" alt="logo" width="200" height="400"/>
 
 # :handshake: Contributors
 
