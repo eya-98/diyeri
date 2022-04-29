@@ -1,4 +1,4 @@
-# :plate_with_cutlery:  diyeri
+# :plate_with_cutlery:  DIYERI
 
 <img src="assets/logo2.png">
 
