@@ -1,6 +1,6 @@
 # :plate_with_cutlery:  DIYERI
 
-<img src="assets/logo2.png">
+<img src="Diyeri/assets/logo2.png">
 
 Our mobile application is based on a customer-to-customer business strategy that connects different actors in the Tunisian community interested in homemade food for sale and purchase.
 
