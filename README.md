@@ -1,6 +1,6 @@
 # :plate_with_cutlery:  DIYERI
 
-<img src="Diyeri/assets/logo2.png">
+<img src="diyeri/assets/logo2.png">
 
 Our mobile application is based on a customer-to-customer business strategy that connects different actors in the Tunisian community interested in homemade food for sale and purchase.
 
@@ -23,7 +23,7 @@ This app uses a proper login Authentication using <mark>Firebase Authentication<
 
 ## Home Screen & Favorite Screen
 
-<img src="assets/home.png" alt="logo" width="200" height="400" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="assets/favorite.png" alt="logo" width="200" height="400"/>
+<img src="diyeri/assets/home.png" alt="logo" width="200" height="400" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="diyeri/assets/favorite.png" alt="logo" width="200" height="400"/>
 
 # :handshake: Contributors
 
